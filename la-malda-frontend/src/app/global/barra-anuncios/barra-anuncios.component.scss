@@ -1,0 +1,29 @@
+.barra-anuncios {
+  --velocidad-desplazamiento: 250s;
+}
+
+.movimiento-barra {
+  animation: desplazar-izquierda var(--velocidad-desplazamiento) linear infinite;
+  will-change: transform;
+}
+
+.barra-anuncios:hover .movimiento-barra,
+.barra-anuncios:focus-within .movimiento-barra {
+  animation-play-state: paused;
+}
+
+@keyframes desplazar-izquierda {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .movimiento-barra {
+    animation: none !important;
+    transform: none !important;
+  }
+}

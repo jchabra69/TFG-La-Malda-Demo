@@ -1,0 +1,161 @@
+<section class="bg-white p-5">
+  <header class="flex justify-between items-center mb-4">
+    <div>
+      <h1 class="m-0 text-4xl leading-tight font-display font-bold">Pedidos</h1>
+      <p class="mt-1 mb-0 text-text-secondary text-base">Aquí podrás cambiar el estado de un pedido o ver cuáles hay</p>
+    </div>
+  </header>
+
+  @if (cargando()) {
+    <div class="grid place-items-center py-12">
+      <div class="w-10 h-10 rounded-full border-4 border-[#e5e7eb] border-t-black animate-spin"></div>
+    </div>
+  } @else {
+    <div class="grid gap-4">
+      <div class="bg-white rounded-xl shadow-[0_10px_24px_rgba(0,0,0,0.05)] overflow-hidden">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr>
+              <th class="px-4 py-[0.85rem] text-left border-b border-[#eef0f4] text-[0.95rem] bg-[#fafafa] font-bold">ID</th>
+              <th class="px-4 py-[0.85rem] text-left border-b border-[#eef0f4] text-[0.95rem] bg-[#fafafa] font-bold">Cliente</th>
+              <th class="px-4 py-[0.85rem] text-left border-b border-[#eef0f4] text-[0.95rem] bg-[#fafafa] font-bold">Fecha</th>
+              <th class="px-4 py-[0.85rem] text-left border-b border-[#eef0f4] text-[0.95rem] bg-[#fafafa] font-bold">Estado</th>
+              <th class="px-4 py-[0.85rem] text-left border-b border-[#eef0f4] text-[0.95rem] bg-[#fafafa] font-bold">Total</th>
+              <th class="px-4 py-[0.85rem] text-left border-b border-[#eef0f4] text-[0.95rem] bg-[#fafafa] font-bold">Productos</th>
+              <th class="px-4 py-[0.85rem] text-left border-b border-[#eef0f4] text-[0.95rem] bg-[#fafafa] font-bold"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (pedido of pedidos(); track pedido.id) {
+              <tr>
+                <td class="px-4 py-[0.85rem] border-b border-[#eef0f4] text-[0.95rem]">#{{ pedido.id }}</td>
+                <td class="px-4 py-[0.85rem] border-b border-[#eef0f4] text-[0.95rem]">
+                  <div class="flex flex-col">
+                    <span class="font-semibold text-sm text-[#111827]">{{ pedido.usuarioNombre || 'Usuario desconocido' }}</span>
+                    <span class="text-xs text-[#4b5563]">ID #{{ pedido.usuarioId }} · {{ pedido.usuarioEmail || 'Sin email' }}</span>
+                  </div>
+                </td>
+                <td class="px-4 py-[0.85rem] border-b border-[#eef0f4] text-[0.95rem]">{{ pedido.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td class="px-4 py-[0.85rem] border-b border-[#eef0f4] text-[0.95rem]">
+                  <span [ngClass]="getClaseEstado(pedido.estado)">{{ getEstadoTexto(pedido.estado) }}</span>
+                </td>
+                <td class="px-4 py-[0.85rem] border-b border-[#eef0f4] text-[0.95rem]">{{ pedido.total | number:'1.2-2' }} €</td>
+                <td class="px-4 py-[0.85rem] border-b border-[#eef0f4] text-[0.95rem]">{{ getCantidadProd(pedido) }}</td>
+                <td class="px-4 py-[0.85rem] border-b border-[#eef0f4] text-[0.95rem]">
+                  <div class="inline-flex gap-[0.35rem]">
+                    <button
+                      class="w-[34px] h-[34px] inline-flex items-center justify-center border border-[#e5e7eb] rounded-lg bg-white cursor-pointer transition-all duration-200 hover:border-black hover:text-black"
+                      type="button"
+                      (click)="editarEstado(pedido)"
+                      title="Editar estado"
+                    >
+                      <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <button
+                      class="w-[34px] h-[34px] inline-flex items-center justify-center border border-[#e5e7eb] rounded-lg bg-white cursor-pointer transition-all duration-200 hover:border-black hover:text-black"
+                      type="button"
+                      (click)="verDetalle(pedido)"
+                      title="Ver detalle"
+                    >
+                      <i class="fa-regular fa-eye"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7" class="px-4 py-8 text-center text-[#6b7280]">No hay pedidos registrados.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bg-white rounded-xl p-4 shadow-[0_10px_24px_rgba(0,0,0,0.05)] min-h-[400px]">
+        @if (seleccionado(); as pedidoSel) {
+          <div class="flex justify-between items-center mb-4">
+            <div>
+              <p class="m-0 mb-[0.15rem] text-sm text-text-secondary">Pedido</p>
+              <h3 class="m-0 text-[1.3rem] font-bold">#{{ pedidoSel.id }}</h3>
+            </div>
+            <div class="flex items-center gap-2">
+              <span [ngClass]="getClaseEstado(pedidoSel.estado)">
+                {{ getEstadoTexto(pedidoSel.estado) }}
+              </span>
+              @if (estaEditandoEstado(pedidoSel)) {
+                <select
+                  class="border border-[#e5e7eb] rounded-[10px] px-[0.85rem] py-[0.65rem] text-[0.95rem] focus:outline-none focus:border-black focus:shadow-[0_0_0_3px_rgba(0,0,0,0.05)]"
+                  [value]="estadoEditable()"
+                  (change)="onEstadoSelectChange($any($event.target).value)">
+                  @for (estado of estadosDisponibles; track estado.value) {
+                    <option [value]="estado.value">{{ estado.label }}</option>
+                  }
+                </select>
+                <button
+                  class="bg-black text-white border-none rounded-[10px] px-4 py-[0.55rem] text-sm font-bold cursor-pointer transition-all duration-200 inline-flex items-center gap-2 hover:bg-black hover:-translate-y-px disabled:opacity-50 disabled:cursor-not-allowed"
+                  type="button"
+                  (click)="actualizarEstadoSeleccionado()"
+                  [disabled]="estadoEditable() === pedidoSel.estado || actualizandoEstado()">
+                  {{ actualizandoEstado() ? 'Guardando...' : 'Guardar' }}
+                </button>
+              } @else {
+                <button
+                  class="w-[34px] h-[34px] inline-flex items-center justify-center border border-[#e5e7eb] rounded-lg bg-white cursor-pointer transition-all duration-200 hover:border-black hover:text-black"
+                  type="button"
+                  (click)="editarEstado(pedidoSel)"
+                  title="Editar estado">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mb-4">
+            <div>
+              <p class="m-0 mb-[0.15rem] text-sm text-text-secondary">Fecha</p>
+              <p class="m-0 font-bold text-text-primary">{{ pedidoSel.fecha | date:'dd/MM/yyyy HH:mm' }}</p>
+            </div>
+            <div>
+              <p class="m-0 mb-[0.15rem] text-sm text-text-secondary">Total</p>
+              <p class="m-0 font-bold text-text-primary">{{ pedidoSel.total | number:'1.2-2' }}€</p>
+            </div>
+            <div>
+              <p class="m-0 mb-[0.15rem] text-sm text-text-secondary">Usuario</p>
+              <p class="m-0 font-bold text-text-primary">
+                {{ pedidoSel.usuarioNombre || 'Usuario desconocido' }}
+                <span class="text-sm font-normal text-text-secondary">(#{{ pedidoSel.usuarioId }})</span>
+              </p>
+              <p class="m-0 text-sm text-text-secondary">{{ pedidoSel.usuarioEmail || 'Email no disponible' }}</p>
+            </div>
+            <div>
+              <p class="m-0 mb-[0.15rem] text-sm text-text-secondary">Dirección</p>
+              @if (pedidoSel.direccion) {
+                <p class="m-0 font-bold text-text-primary">
+                  {{ pedidoSel.direccion.calle }}, {{ pedidoSel.direccion.ciudad }} ({{ pedidoSel.direccion.codigoPostal }}) · {{ pedidoSel.direccion.provincia }}, {{ pedidoSel.direccion.pais }}
+                </p>
+              } @else {
+                <p class="m-0 font-bold text-text-secondary">No disponible</p>
+              }
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <h4 class="font-bold mb-3">Artículos</h4>
+            <div *ngFor="let linea of pedidoSel.lineas" class="grid grid-cols-[1fr_auto_auto] items-center gap-3 py-[0.6rem] border-b border-[#f1f3f6] last:border-b-0">
+              <div>
+                <p class="m-0 font-bold text-text-primary">{{ linea.nombreProducto }}</p>
+                <p class="m-0 mb-[0.15rem] text-sm text-text-secondary">ID producto: {{ linea.productoId }}</p>
+              </div>
+              <div class="font-bold text-[#374151]">{{ linea.cantidad }}x</div>
+              <div class="font-extrabold">{{ linea.subtotal | number:'1.2-2' }}€</div>
+            </div>
+          </div>
+        } @else {
+          <div class="grid place-items-center text-text-secondary min-h-[200px]">
+            <p>Selecciona un pedido para ver el detalle.</p>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</section>

@@ -1,0 +1,15 @@
+<div class="home-page bg-[#f8f9fa]">
+  <app-banner-hero></app-banner-hero>
+
+  <app-grid-productos-destacados
+    [productos]="productosNuevos"
+    [titulo]="'Populares'">
+  </app-grid-productos-destacados>
+
+  <app-seccion-categorias
+    [categorias]="categorias"
+    [cargando]="cargando">
+  </app-seccion-categorias>
+
+  <app-seccion-celebs></app-seccion-celebs>
+</div>

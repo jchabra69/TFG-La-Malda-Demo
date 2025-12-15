@@ -1,0 +1,57 @@
+<section class="seccion-grid-productos">
+  <div class="contenedor-grid">
+
+    <div class="header-grid">
+      <div class="texto-header">
+        <h2 class="titulo-grid">{{ titulo }}</h2>
+        @if (subtitulo) {
+          <p class="subtitulo-grid">{{ subtitulo }}</p>
+        }
+      </div>
+
+      @if (mostrarVerTodo && productos.length > maxProductos) {
+        <a
+          [routerLink]="linkVerTodo"
+          class="cta-ver-todo-desktop"
+          aria-label="Ver todos los productos"
+        >
+          Ver todo
+          <lucide-icon name="arrow-right" [size]="20" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+        </a>
+      }
+    </div>
+
+    @if (tieneProductos) {
+      <div class="grid-productos">
+        @for (producto of productosVisibles; track producto.id; let i = $index) {
+          <div
+            class="grid-item"
+            [class.destacado]="i === 0"
+          >
+            <app-tarjeta-producto [product]="producto" [mostrarNuevo]="false"></app-tarjeta-producto>
+          </div>
+        }
+      </div>
+    }
+
+    @if (!tieneProductos) {
+      <div class="estado-vacio">
+        <lucide-icon name="shopping-cart" [size]="64" strokeWidth="2.4" class="icono-vacio" aria-hidden="true"></lucide-icon>
+        <p class="texto-vacio">No hay productos disponibles</p>
+      </div>
+    }
+
+    @if (mostrarVerTodo && productos.length > maxProductos) {
+      <div class="footer-grid">
+        <a
+          [routerLink]="linkVerTodo"
+          class="cta-ver-todo-mobile"
+          aria-label="Ver todos los productos"
+        >
+          Ver todos los productos
+          <lucide-icon name="arrow-right" [size]="20" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+        </a>
+      </div>
+    }
+  </div>
+</section>

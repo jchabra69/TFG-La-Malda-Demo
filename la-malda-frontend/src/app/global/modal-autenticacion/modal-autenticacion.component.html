@@ -1,0 +1,200 @@
+<div class="fondo-modal" *ngIf="estaAbierto()" (click)="close()"></div>
+
+<div class="contenedor-modal" *ngIf="estaAbierto()">
+
+    <div class="contenido-modal" (click)="$event.stopPropagation()">
+
+    <button class="close-btn" (click)="close()" aria-label="Cerrar" title="Cerrar modal de autenticación">
+      <lucide-icon name="x" [size]="20" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+    </button>
+
+    <div class="disposicion-modal">
+
+      <div class="lado-formulario">
+
+        <div class="cabecera-modal">
+          <h2 class="titulo-modal">
+            {{ modo() === 'login' ? 'Bienvenido de nuevo' : 'Únete a La Malda' }}
+          </h2>
+          <p class="aviso-contexto" *ngIf="contexto() === 'carrito'">
+            Para continuar su compra, debe iniciar sesión o registrarte.
+          </p>
+        </div>
+
+        <div class="banner-error" *ngIf="mensajeError()">
+          <lucide-icon name="alert-circle" [size]="20" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+          <span>{{ mensajeError() }}</span>
+        </div>
+
+        <form *ngIf="modo() === 'login'"
+              [formGroup]="formularioAcceso"
+              (ngSubmit)="enviarLogin()"
+              class="formulario-auth">
+
+          <div class="grupo-formulario">
+            <label for="login-email">Correo electrónico</label>
+            <input
+              id="login-email"
+              type="email"
+              formControlName="email"
+              placeholder="tu@email.com"
+              [class.error]="formularioAcceso.get('email')?.touched && formularioAcceso.get('email')?.invalid">
+            <span class="error-text" *ngIf="formularioAcceso.get('email')?.touched && formularioAcceso.get('email')?.invalid">
+              {{ getMensajeError(formularioAcceso, 'email') }}
+            </span>
+          </div>
+
+          <div class="grupo-formulario">
+            <label for="login-password">Contraseña</label>
+            <div class="envoltorio-contrasena">
+              <input
+                id="login-password"
+                [type]="mostrarContrasena() ? 'text' : 'password'"
+                formControlName="password"
+                placeholder="••••••••"
+                [class.error]="formularioAcceso.get('password')?.touched && formularioAcceso.get('password')?.invalid">
+              <button
+                type="button"
+                class="alternar-contrasena"
+                (click)="alternarVisibilidadContrasena()"
+                aria-label="Mostrar u ocultar contraseña"
+                [attr.title]="mostrarContrasena() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+                <lucide-icon *ngIf="!mostrarContrasena()" name="eye" [size]="20" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+                <lucide-icon *ngIf="mostrarContrasena()" name="eye-off" [size]="20" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+              </button>
+            </div>
+            <span class="error-text" *ngIf="formularioAcceso.get('password')?.touched && formularioAcceso.get('password')?.invalid">
+              {{ getMensajeError(formularioAcceso, 'password') }}
+            </span>
+          </div>
+
+          <a href="#" class="olvido-contrasena">¿Olvidaste tu contraseña?</a>
+
+          <button
+            type="submit"
+            class="btn-enviar"
+            [disabled]="cargando()">
+            <span *ngIf="!cargando()">Iniciar sesión</span>
+            <span *ngIf="cargando()" class="spinner"></span>
+          </button>
+
+          <p class="cambiar-modo">
+            ¿No tienes cuenta?
+            <button type="button" (click)="cambiarModo()">Regístrate</button>
+          </p>
+        </form>
+
+        <!-- REGISTRO -->
+        <form *ngIf="modo() === 'register'"
+              [formGroup]="formularioRegistro"
+              (ngSubmit)="enviarRegistro()"
+              class="formulario-auth">
+
+          <div class="grupo-formulario">
+            <label for="register-nombre">Nombre</label>
+            <input
+              id="register-nombre"
+              type="text"
+              formControlName="nombre"
+              [class.error]="formularioRegistro.get('nombre')?.touched && formularioRegistro.get('nombre')?.invalid">
+            <span class="error-text" *ngIf="formularioRegistro.get('nombre')?.touched && formularioRegistro.get('nombre')?.invalid">
+              {{ getMensajeError(formularioRegistro, 'nombre') }}
+            </span>
+          </div>
+
+          <div class="grupo-formulario">
+            <label for="register-apellidos">Apellidos</label>
+            <input
+              id="register-apellidos"
+              type="text"
+              formControlName="apellidos"
+              [class.error]="formularioRegistro.get('apellidos')?.touched && formularioRegistro.get('apellidos')?.invalid">
+            <span class="error-text" *ngIf="formularioRegistro.get('apellidos')?.touched && formularioRegistro.get('apellidos')?.invalid">
+              {{ getMensajeError(formularioRegistro, 'apellidos') }}
+            </span>
+          </div>
+
+          <div class="grupo-formulario">
+            <label for="register-telefono">Teléfono</label>
+            <input
+              id="register-telefono"
+              type="tel"
+              formControlName="telefono"
+              [class.error]="formularioRegistro.get('telefono')?.touched && formularioRegistro.get('telefono')?.invalid">
+            <span class="error-text" *ngIf="formularioRegistro.get('telefono')?.touched && formularioRegistro.get('telefono')?.invalid">
+              {{ getMensajeError(formularioRegistro, 'telefono') }}
+            </span>
+          </div>
+
+          <div class="grupo-formulario">
+            <label for="register-email">Correo electrónico</label>
+            <input
+              id="register-email"
+              type="email"
+              formControlName="email"
+              [class.error]="formularioRegistro.get('email')?.touched && formularioRegistro.get('email')?.invalid">
+            <span class="error-text" *ngIf="formularioRegistro.get('email')?.touched && formularioRegistro.get('email')?.invalid">
+              {{ getMensajeError(formularioRegistro, 'email') }}
+            </span>
+          </div>
+
+          <div class="grupo-formulario">
+            <label for="register-password">Contraseña</label>
+            <div class="envoltorio-contrasena">
+              <input
+                id="register-password"
+                [type]="mostrarContrasena() ? 'text' : 'password'"
+                formControlName="password"
+                [class.error]="formularioRegistro.get('password')?.touched && formularioRegistro.get('password')?.invalid">
+              <button
+                type="button"
+                class="alternar-contrasena"
+                (click)="alternarVisibilidadContrasena()"
+                aria-label="Mostrar u ocultar contraseña"
+                [attr.title]="mostrarContrasena() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+                <lucide-icon *ngIf="!mostrarContrasena()" name="eye" [size]="20" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+                <lucide-icon *ngIf="mostrarContrasena()" name="eye-off" [size]="20" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+              </button>
+            </div>
+            <span class="error-text" *ngIf="formularioRegistro.get('password')?.touched && formularioRegistro.get('password')?.invalid">
+              {{ getMensajeError(formularioRegistro, 'password') }}
+            </span>
+          </div>
+
+          <button
+            type="submit"
+            class="btn-enviar"
+            [disabled]="cargando()">
+            <span *ngIf="!cargando()">Suscribirme</span>
+            <span *ngIf="cargando()" class="spinner"></span>
+          </button>
+
+          <p class="cambiar-modo">
+            ¿Ya tienes cuenta?
+            <button type="button" (click)="cambiarModo()">Inicia sesión</button>
+          </p>
+        </form>
+
+      </div>
+
+      <!-- DIVISOR -->
+      <div class="divisor-vertical"></div>
+
+      <!-- IMAGEN -->
+      <div class="lado-imagen">
+        <div class="contenido-imagen">
+          <img
+            src="https://res.cloudinary.com/dwa6dhgw9/image/upload/v1764704874/LaMalda-Login_krpnxi.webp"
+            alt="Moda La Malda"
+            class="imagen-hero">
+          <div class="capa-imagen">
+            <h3 class="titulo-imagen">La Malda'</h3>
+            <p class="image-text">Keep it Real</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>

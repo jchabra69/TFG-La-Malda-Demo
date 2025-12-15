@@ -1,0 +1,20 @@
+<div class="notification-container" aria-live="assertive" aria-atomic="true">
+  <div
+    *ngFor="let note of notificaciones()"
+    class="notification"
+    [ngClass]="note.tipo"
+  >
+    <span class="icon" aria-hidden="true">
+      {{ note.tipo === 'exito' ? '✓' : '!' }}
+    </span>
+    <p>{{ note.mensaje }}</p>
+    <button
+      type="button"
+      class="close-btn"
+      (click)="cerrar(note.id)"
+      aria-label="Cerrar notificación"
+    >
+      ✕
+    </button>
+  </div>
+</div>

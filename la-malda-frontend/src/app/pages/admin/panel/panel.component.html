@@ -1,0 +1,118 @@
+<div class="bg-white p-5">
+  @if (cargando()) {
+    <div class="grid place-items-center py-12">
+      <div class="w-10 h-10 rounded-full border-4 border-[#e5e7eb] border-t-black animate-spin"></div>
+    </div>
+  } @else if (errorMessage()) {
+    <div class="bg-[#fef2f2] border border-[#fecaca] rounded-xl p-6 text-center">
+      <div>
+        <i class="fas fa-exclamation-triangle text-[#dc2626] text-3xl mb-3"></i>
+        <p class="font-bold text-lg text-[#991b1b] m-0 mb-2">No se pudieron cargar las métricas</p>
+        <p class="text-[#b91c1c] m-0 mb-4">{{ errorMessage() }}</p>
+      </div>
+      <button 
+        class="bg-[#dc2626] text-white border-none rounded-[10px] px-5 py-[0.65rem] font-bold cursor-pointer transition-all duration-200 inline-flex items-center gap-2 hover:bg-[#b91c1c]"
+        (click)="cargarStats()"
+      >
+        <i class="fas fa-redo"></i> Reintentar
+      </button>
+    </div>
+  } @else if (stats()) {
+
+    <div class="mb-8">
+      <h2 class="m-0 text-4xl leading-tight font-display font-bold mb-2">Panel de administración</h2>
+      <p class="m-0 text-text-secondary text-base">Resumen rápido de usuarios, catálogo y stock</p>
+    </div>
+
+    <section class="flex flex-wrap gap-6 mb-8">
+      <article class="flex-1 min-w-[220px] bg-white border border-[#e5e7eb] rounded-2xl p-6 shadow-[0_10px_24px_rgba(0,0,0,0.05)]">
+        <p class="text-sm font-semibold text-[#6b7280] uppercase tracking-wide m-0 mb-3">Usuarios totales</p>
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-4xl font-bold m-0">{{ stats()!.totalUsuarios }}</p>
+          <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold text-black bg-[#eef0f4]">
+            {{ stats()!.usuariosActivos }} activos
+          </span>
+        </div>
+        <p class="text-sm text-[#6b7280] m-0">Registrados actualmente</p>
+      </article>
+
+      <article class="flex-1 min-w-[220px] bg-white border border-[#e5e7eb] rounded-2xl p-6 shadow-[0_10px_24px_rgba(0,0,0,0.05)]">
+        <p class="text-sm font-semibold text-[#6b7280] uppercase tracking-wide m-0 mb-3">Productos</p>
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-4xl font-bold m-0">{{ stats()!.totalProductos }}</p>
+          <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold text-black bg-[#eef0f4]">
+            Inactivos: {{ stats()?.productosInactivos ?? 0 }}
+          </span>
+        </div>
+        <p class="text-sm text-[#6b7280] m-0">Total del catálogo</p>
+      </article>
+
+      <article class="flex-1 min-w-[220px] bg-white border border-[#e5e7eb] rounded-2xl p-6 shadow-[0_10px_24px_rgba(0,0,0,0.05)]">
+        <p class="text-sm font-semibold text-[#6b7280] uppercase tracking-wide m-0 mb-3">Categorías</p>
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-4xl font-bold m-0">{{ stats()!.totalCategorias }}</p>
+          <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold text-black bg-[#eef0f4]">
+            Totales
+          </span>
+        </div>
+        <p class="text-sm text-[#6b7280] m-0">Disponibles en la tienda</p>
+      </article>
+    </section>
+
+    <section class="mb-8">
+      <h3 class="m-0 text-2xl font-bold mb-4">Acciones rápidas</h3>
+      <div class="grid grid-cols-3 gap-4 tablet:grid-cols-1">
+        <a 
+          class="bg-white border border-[#e5e7eb] rounded-xl p-6 cursor-pointer transition-all duration-200 hover:shadow-[0_10px_24px_rgba(0,0,0,0.1)] hover:border-black flex items-center gap-4" 
+          routerLink="/admin/productos" 
+          [queryParams]="{ action: 'new' }"
+        >
+          <div class="w-12 h-12 rounded-lg bg-[#f3f4f6] flex items-center justify-center text-black text-xl">
+            <i class="fas fa-plus"></i>
+          </div>
+          <span class="font-bold">Nuevo producto</span>
+        </a>
+        <a 
+          class="bg-white border border-[#e5e7eb] rounded-xl p-6 cursor-pointer transition-all duration-200 hover:shadow-[0_10px_24px_rgba(0,0,0,0.1)] hover:border-black flex items-center gap-4" 
+          routerLink="/admin/categorias" 
+          [queryParams]="{ action: 'new' }"
+        >
+          <div class="w-12 h-12 rounded-lg bg-[#f3f4f6] flex items-center justify-center text-black text-xl">
+            <i class="fas fa-folder-plus"></i>
+          </div>
+          <span class="font-bold">Nueva categoría</span>
+        </a>
+        <a 
+          class="bg-white border border-[#e5e7eb] rounded-xl p-6 cursor-pointer transition-all duration-200 hover:shadow-[0_10px_24px_rgba(0,0,0,0.1)] hover:border-black flex items-center gap-4" 
+          routerLink="/admin/usuarios"
+        >
+          <div class="w-12 h-12 rounded-lg bg-[#f3f4f6] flex items-center justify-center text-black text-xl">
+            <i class="fas fa-users-cog"></i>
+          </div>
+          <span class="font-bold">Gestionar usuarios</span>
+        </a>
+      </div>
+    </section>
+
+    @if ((stats()?.productosConBajoStock ?? 0) > 0) {
+      <section class="bg-[#fffbeb] border border-[#fde68a] rounded-2xl p-6">
+        <div class="flex items-start gap-4 mb-4">
+          <div class="w-12 h-12 rounded-lg bg-[#fef3c7] flex items-center justify-center text-[#d97706] text-xl">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="flex-1">
+            <h4 class="m-0 font-bold text-lg mb-1">Algunos productos necesitan reposición</h4>
+            <p class="m-0 text-sm text-[#92400e]">{{ stats()?.productosConBajoStock ?? 0 }} con stock bajo</p>
+          </div>
+        </div>
+        <button 
+          routerLink="/admin/productos" 
+          class="w-full bg-[#f59e0b] text-white border-none rounded-[10px] px-4 py-3 font-bold cursor-pointer transition-all duration-200 inline-flex items-center justify-center gap-2 hover:bg-[#d97706]"
+        >
+          Ver productos <i class="fas fa-arrow-right"></i>
+        </button>
+      </section>
+    }
+
+  }
+</div>

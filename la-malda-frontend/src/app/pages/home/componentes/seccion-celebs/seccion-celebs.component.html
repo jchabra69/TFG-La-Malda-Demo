@@ -1,0 +1,109 @@
+<section class="seccion-celebs">
+
+  @if (mostrarTitulo) {
+    <div class="header-celebs">
+      <span class="eyebrow">MOODBOARD</span>
+      <h2 class="titulo-celebs">{{ titulo }}</h2>
+      @if (subtitulo) {
+        <p class="subtitulo-celebs">{{ subtitulo }}</p>
+      }
+    </div>
+  }
+
+  @if (celebridades.length > 0) {
+    <div class="bento-grid">
+      @for (celeb of celebridades; track trackByCelebId($index, celeb)) {
+        <article
+          class="celeb-item"
+          [class.destacada]="celeb.destacada"
+          [attr.aria-label]="'Ver productos de ' + celeb.nombre"
+        >
+
+          <img
+            [src]="celeb.imagen"
+            [alt]="celeb.nombre + ' luciendo productos de La Malda'"
+            (error)="usarFallback($event, celeb.imagenFallback)"
+            class="celeb-imagen"
+            loading="lazy"
+            decoding="async"
+          />
+
+          <div class="celeb-overlay">
+            <div class="celeb-content">
+
+              @if (celeb.nuevo) {
+                <span class="celeb-badge">
+                  <lucide-icon name="star" [size]="14" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+                  NUEVO
+                </span>
+              }
+
+              <h3 class="celeb-nombre">{{ celeb.nombre }}</h3>
+
+              <p class="celeb-descripcion">{{ celeb.descripcion }}</p>
+
+              <div class="productos-lista">
+                @for (producto of celeb.productos; track trackByProductoId($index, producto)) {
+                  <a
+                    [routerLink]="['/producto', producto.slug]"
+                    class="producto-pill"
+                    [attr.aria-label]="'Ver ' + producto.nombre"
+                  >
+                    {{ producto.nombre }}
+                    <lucide-icon name="arrow-right" [size]="14" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+                  </a>
+                }
+              </div>
+
+              @if (celeb.redes && (celeb.redes.instagram || celeb.redes.tiktok)) {
+                <div class="celeb-redes">
+              @if (celeb.redes.instagram) {
+                <a
+                  [href]="celeb.redes.instagram"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="red-social"
+                  [attr.aria-label]="'Ver Instagram de ' + celeb.nombre"
+                >
+                  <i class="fa-brands fa-instagram text-[18px]" aria-hidden="true"></i>
+                </a>
+              }
+              @if (celeb.redes.youtube) {
+                <a
+                  [href]="celeb.redes.youtube"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="red-social"
+                  [attr.aria-label]="'Ver YouTube de ' + celeb.nombre"
+                >
+                  <i class="fa-brands fa-youtube text-[18px]" aria-hidden="true"></i>
+                </a>
+              }
+              @if (celeb.redes.tiktok) {
+                <a
+                  [href]="celeb.redes.tiktok"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="red-social"
+                      [attr.aria-label]="'Ver TikTok de ' + celeb.nombre"
+                    >
+                      <i class="fa-brands fa-tiktok text-[18px]" aria-hidden="true"></i>
+                    </a>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  }
+
+  @if (celebridades.length === 0) {
+    <div class="estado-vacio">
+      <lucide-icon name="users" [size]="64" strokeWidth="2.4" class="icono-vacio" aria-hidden="true"></lucide-icon>
+      <p class="texto-vacio">Próximamente verás a más celebs luciendo La Malda'</p>
+    </div>
+  }
+
+</section>

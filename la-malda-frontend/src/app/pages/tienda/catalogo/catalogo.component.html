@@ -1,0 +1,210 @@
+<div class="catalogo-container min-h-screen bg-white">
+  <div class="contenedor-principal max-w-[1400px] mx-auto px-4 py-8">
+
+    <div class="encabezado mb-8">
+      <h1 class="text-4xl font-bold text-gray-900 mb-2">Catálogo</h1>
+      <p class="text-gray-600">Cómprame algo</p>
+    </div>
+
+    <div class="barra-busqueda-superior mb-8">
+      <div class="relative max-w-2xl">
+        <input
+          type="text"
+          [(ngModel)]="busqueda"
+          (input)="alCambiarBusqueda()"
+          placeholder="Buscar productos..."
+          class="w-full px-6 py-4 pr-12 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-red transition-colors text-lg"
+        />
+        <lucide-icon
+          name="search"
+          [size]="24"
+          class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+        ></lucide-icon>
+      </div>
+    </div>
+
+    <div class="flex gap-8">
+
+      <aside class="sidebar-filtros w-80 flex-shrink-0 hidden desktop:block">
+        <div class="sticky top-24">
+          <div class="bg-gray-50 rounded-lg p-6">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-xl font-bold text-gray-900">Filtros</h2>
+              <button
+                *ngIf="categoriaSeleccionada !== null || busqueda"
+                (click)="limpiarFiltros()"
+                class="text-sm text-red hover:underline font-semibold"
+              >
+                Limpiar
+              </button>
+            </div>
+
+            <div class="categorias-filtro">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">Categorías</h3>
+
+              <div class="espacio-categorias">
+                <button
+                  (click)="seleccionarCategoria(null)"
+                  [class.activa]="categoriaSeleccionada === null && categoriasSeleccionadasExtras.length === 0"
+                  class="item-categoria"
+                >
+                  <span>Todas las categorías</span>
+                  <span class="contador" *ngIf="categoriaSeleccionada === null">
+                    {{ productos.length }}
+                  </span>
+                </button>
+
+                <ng-container *ngFor="let categoria of categorias">
+                  <button
+                    (click)="seleccionarCategoria(categoria.id)"
+                    [class.activa]="esCategoriaActiva(categoria.id)"
+                    class="item-categoria principal"
+                  >
+                    <span>{{ categoria.nombre }}</span>
+                  </button>
+
+                  <ng-container *ngIf="categoria.subcategorias && categoria.subcategorias.length > 0">
+                    <button
+                      *ngFor="let sub of categoria.subcategorias"
+                      (click)="seleccionarCategoria(sub.id)"
+                      [class.activa]="esCategoriaActiva(sub.id)"
+                      class="item-categoria subcategoria"
+                    >
+                      <span>{{ sub.nombre }}</span>
+                    </button>
+                  </ng-container>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <button
+        (click)="cambiarEstadoMenuCategoria()"
+        class="boton-filtros-mobile desktop:hidden fixed bottom-6 right-6 z-50 bg-black text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg hover:bg-red transition-colors"
+      >
+        <lucide-icon name="filter" [size]="24"></lucide-icon>
+      </button>
+
+      <div
+        *ngIf="menuCategoriaAbierto"
+        class="overlay-mobile desktop:hidden fixed inset-0 bg-black/50 z-40"
+        (click)="cambiarEstadoMenuCategoria()"
+      ></div>
+
+      <aside
+        [class.abierto]="menuCategoriaAbierto"
+        class="sidebar-mobile desktop:hidden fixed right-0 top-0 bottom-0 w-80 bg-white z-50 transform translate-x-full transition-transform duration-300 shadow-xl overflow-y-auto"
+      >
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold text-gray-900">Filtros</h2>
+            <button
+              (click)="cambiarEstadoMenuCategoria()"
+              class="text-gray-500 hover:text-gray-900"
+            >
+              <lucide-icon name="x" [size]="24"></lucide-icon>
+            </button>
+          </div>
+
+          <button
+            *ngIf="categoriaSeleccionada !== null || busqueda"
+            (click)="limpiarFiltros()"
+            class="w-full mb-6 px-4 py-2 bg-red text-white rounded-lg hover:bg-red/90 transition-colors font-semibold"
+          >
+            Limpiar filtros
+          </button>
+
+          <div class="categorias-filtro">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Categorías</h3>
+
+            <div class="espacio-categorias">
+              <button
+                (click)="seleccionarCategoria(null); cambiarEstadoMenuCategoria()"
+                [class.activa]="categoriaSeleccionada === null && categoriasSeleccionadasExtras.length === 0"
+                class="item-categoria"
+              >
+                <span>Todas las categorías</span>
+              </button>
+
+              <ng-container *ngFor="let categoria of categorias">
+                <button
+                  (click)="seleccionarCategoria(categoria.id); cambiarEstadoMenuCategoria()"
+                  [class.activa]="esCategoriaActiva(categoria.id)"
+                  class="item-categoria principal"
+                >
+                  <span>{{ categoria.nombre }}</span>
+                </button>
+
+                <ng-container *ngIf="categoria.subcategorias && categoria.subcategorias.length > 0">
+                  <button
+                    *ngFor="let sub of categoria.subcategorias"
+                    (click)="seleccionarCategoria(sub.id); cambiarEstadoMenuCategoria()"
+                    [class.activa]="esCategoriaActiva(sub.id)"
+                    class="item-categoria subcategoria"
+                  >
+                    <span>{{ sub.nombre }}</span>
+                  </button>
+                </ng-container>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="contenido-principal flex-1">
+
+        <div class="barra-resultados flex items-center justify-between mb-6 flex-wrap gap-4">
+          <div class="info-resultados">
+            <p class="text-gray-600">
+              <span class="font-semibold text-gray-900">{{ productosFiltrados.length }}</span>
+              {{ productosFiltrados.length === 1 ? 'producto encontrado' : 'productos encontrados' }}
+              <span *ngIf="categoriaSeleccionada !== null" class="text-red font-semibold ml-1">
+                en {{ getNombreCategoria(categoriaSeleccionada) }}
+              </span>
+            </p>
+          </div>
+
+          <div class="selector-orden">
+            <label class="flex items-center gap-3">
+              <span class="text-sm text-gray-600 font-medium">Ordenar por:</span>
+              <select
+                [(ngModel)]="ordenSeleccionado"
+                (change)="alCambiarOrden()"
+                class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red transition-colors cursor-pointer bg-white"
+              >
+                <option *ngFor="let opcion of opcionesOrden" [value]="opcion.valor">
+                  {{ opcion.etiqueta }}
+                </option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div *ngIf="cargando" class="grid-productos">
+          <div *ngFor="let i of [1,2,3,4,5,6,7,8]" class="skeleton-card bg-gray-100 rounded-lg animate-pulse h-[500px]"></div>
+        </div>
+
+        <div *ngIf="!cargando && productosFiltrados.length === 0" class="sin-resultados text-center py-20">
+          <lucide-icon name="package-open" [size]="64" class="mx-auto mb-4 text-gray-300"></lucide-icon>
+          <h3 class="text-2xl font-bold text-gray-900 mb-2">No se encontraron productos</h3>
+          <p class="text-gray-600 mb-6">Intenta ajustar los filtros o la búsqueda</p>
+          <button
+            (click)="limpiarFiltros()"
+            class="px-6 py-3 bg-black text-white rounded-lg hover:bg-red transition-colors font-semibold"
+          >
+            Limpiar filtros
+          </button>
+        </div>
+
+        <div *ngIf="!cargando && productosFiltrados.length > 0" class="grid-productos">
+          <app-tarjeta-producto
+            *ngFor="let producto of productosFiltrados"
+            [product]="producto"
+          ></app-tarjeta-producto>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>

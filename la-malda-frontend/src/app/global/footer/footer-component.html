@@ -1,0 +1,88 @@
+<footer
+  class="bg-black text-white font-body pt-4"
+  aria-labelledby="pieTitulo"
+>
+  <div
+    class="max-w-[var(--wide)] mx-auto grid grid-cols-1 gap-10 text-center border-b border-white/10 px-[clamp(1rem,2vw,2rem)] py-[clamp(3.5rem,5vw,5rem)] tablet:grid-cols-[minmax(200px,_1fr)_minmax(500px,_2fr)_auto] tablet:text-left tablet:items-start tablet:gap-[clamp(1.5rem,2.5vw,3rem)]"
+  >
+
+    <a
+      class="flex flex-col items-center justify-center gap-[0.8rem] mx-auto text-center tablet:justify-self-center tablet:col-span-1"
+      routerLink="/"
+      aria-label="Inicio La Malda'"
+      title="Volver a la página principal"
+    >
+      <img
+        class="w-16 h-16 mx-auto filter brightness-0 invert"
+        src="/icons/mlogo.svg"
+        alt=""
+        aria-hidden="true"
+      />
+      <span
+        class="font-display tracking-[0.08em] text-[clamp(1.1rem,2.8vw,1.4rem)] text-white block w-full text-center"
+        id="pieTitulo"
+      >
+        LA MALDA'
+      </span>
+    </a>
+
+    <div class="grid grid-cols-1 gap-8 text-center mobile:grid-cols-2 tablet:grid-cols-3 tablet:text-left tablet:gap-[clamp(1.5rem,2.5vw,2.25rem)]">
+      <div class="space-y-2">
+        <h4 class="m-0 text-[0.85rem] uppercase tracking-[0.12em] text-white underline underline-offset-4">
+          Tienda
+        </h4>
+        <ul class="m-0 list-none grid gap-1">
+          <li><a class="footer-link" routerLink="/tienda">Mujer</a></li>
+          <li><a class="footer-link" routerLink="/tienda">Hombre</a></li>
+        </ul>
+      </div>
+
+      <div class="space-y-2">
+        <h4 class="m-0 text-[0.85rem] uppercase tracking-[0.12em] text-white underline underline-offset-4">
+          Categorías
+        </h4>
+        <ul class="m-0 list-none grid gap-1">
+          <li><a class="footer-link" routerLink="/catalogo" [queryParams]="{ categoriaSlug: 'bikinis' }">Bikinis</a></li>
+          <li><a class="footer-link" routerLink="/catalogo" [queryParams]="{ categoriaSlug: 'panuelos' }">Pañuelos</a></li>
+        </ul>
+      </div>
+
+      <div class="space-y-2">
+        <h4 class="m-0 text-[0.85rem] uppercase tracking-[0.12em] text-white underline underline-offset-4">
+          DAW
+        </h4>
+        <ul class="m-0 list-none grid gap-1">
+          <li><a class="footer-link" href="/assets/memoria-nico.pdf" target="_blank" rel="noreferrer">TFG</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div
+      class="flex items-center justify-center gap-3 tablet:justify-end tablet:col-span-1 tablet:mt-0"
+      aria-label="Redes sociales"
+    >
+      <a class="social-btn" href="https://www.tiktok.com/@lamaldaculture"
+         target="_blank" rel="noreferrer" aria-label="TikTok" title="Visitar TikTok">
+        <i class="fa-brands fa-tiktok" aria-hidden="true"></i>
+      </a>
+      <a class="social-btn" href="https://www.instagram.com/lamalda.culture/"
+         target="_blank" rel="noreferrer" aria-label="Instagram" title="Visitar Instagram">
+        <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+      </a>
+      <a class="social-btn" href="https://wa.me/"
+         target="_blank" rel="noreferrer" aria-label="WhatsApp" title="Chatear en WhatsApp">
+        <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+      </a>
+      <a class="social-btn" href="https://www.youtube.com/@LaMaldaCulture"
+         target="_blank" rel="noreferrer" aria-label="YouTube" title="Ver en YouTube">
+        <i class="fa-brands fa-youtube" aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+
+  <div
+    class="max-w-[var(--wide)] mx-auto text-center text-[0.85rem] uppercase tracking-[0.14em] text-white/70 py-5 pb-9 px-[clamp(1rem,2vw,2rem)]"
+  >
+    © Copyright {{ anioActual }} La Malda'
+  </div>
+</footer>

@@ -1,0 +1,110 @@
+<section
+  class="seccion-categorias"
+  aria-label="Explora las categorías destacadas de La Malda"
+>
+
+  <div *ngIf="cargando" class="cargando-contenedor">
+    <div class="spinner"></div>
+    <p class="texto-cargando">Cargando categorías...</p>
+  </div>
+
+  <div *ngIf="!cargando" class="contenedor-categorias">
+
+    <a
+      *ngIf="categoriasDestacadas[0] as principal"
+      [routerLink]="['/categoria', principal.slug]"
+      class="tarjeta-categoria tarjeta-grande tarjeta-mujer"
+      [attr.aria-label]="'Ir a la categoría ' + principal.nombre"
+    >
+      <img
+        [src]="principal.imagen"
+        [alt]="principal.alt"
+        (error)="usarFallback($event, principal.fallbackImagen)"
+        class="imagen-categoria"
+        loading="eager"
+        decoding="async"
+      />
+      <div class="overlay-categoria">
+        <div class="contenido-categoria">
+          <span class="etiqueta-categoria">¿Miedo a impresionar?</span>
+          <h2 class="titulo-categoria">{{ principal.nombre }}</h2>
+          <div class="cta-wrapper">
+            <button class="boton-categoria" type="button" (click)="irACatalogoPorGenero('mujer'); $event.preventDefault(); $event.stopPropagation()">
+              Comprar
+            </button>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <a
+      *ngIf="categoriasDestacadas[1] as secundaria"
+      [routerLink]="['/categoria', secundaria.slug]"
+      class="tarjeta-categoria tarjeta-mediana tarjeta-hombre"
+      [attr.aria-label]="'Ir a la categoría ' + secundaria.nombre"
+    >
+      <img
+        [src]="secundaria.imagen"
+        [alt]="secundaria.alt"
+        (error)="usarFallback($event, secundaria.fallbackImagen)"
+        class="imagen-categoria"
+        loading="eager"
+        decoding="async"
+      />
+      <div class="overlay-categoria">
+        <div class="contenido-categoria">
+          <span class="etiqueta-categoria">REBELIÓN DEL LUJO</span>
+          <h2 class="titulo-categoria">{{ secundaria.nombre }}</h2>
+          <div class="cta-wrapper">
+            <button class="boton-categoria" type="button" (click)="irACatalogoPorGenero('hombre'); $event.preventDefault(); $event.stopPropagation()">
+              Comprar
+            </button>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <a
+      *ngIf="categoriasDestacadas[2] as terciaria"
+      [routerLink]="['/categoria', terciaria.slug]"
+      class="tarjeta-categoria tarjeta-mediana tarjeta-unisex"
+      [attr.aria-label]="'Ir a la categoría ' + terciaria.nombre"
+    >
+      <img
+        [src]="terciaria.imagen"
+        [alt]="terciaria.alt"
+        (error)="usarFallback($event, terciaria.fallbackImagen)"
+        class="imagen-categoria"
+        loading="lazy"
+        decoding="async"
+      />
+      <div class="overlay-categoria">
+        <div class="contenido-categoria">
+          <span class="etiqueta-categoria">VE A LA MODA</span>
+          <h2 class="titulo-categoria">{{ terciaria.nombre }}</h2>
+          <div class="cta-wrapper">
+            <button class="boton-categoria" type="button" (click)="irACatalogoAccesorios(); $event.preventDefault(); $event.stopPropagation()">
+              Comprar
+            </button>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <div
+      class="tarjeta-categoria tarjeta-horizontal"
+      aria-label="Banner Keep it real"
+    >
+      <img
+        src="assets/imgs/categorias/LaMalda-Banner-KeepItReal.webp"
+        alt="Colección especial diaria"
+        class="imagen-categoria"
+        loading="lazy"
+        decoding="async"
+      />
+      <div class="overlay-lema" aria-hidden="true">
+        <span>Keep it real</span>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,73 @@
+<div
+  class="tarjeta-producto group bg-[#F5F5F5] rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg flex flex-col h-full"
+  *ngIf="product"
+  (mouseenter)="activarHover()"
+  (mouseleave)="desactivarHover()"
+  (touchstart)="activarHover()"
+  (touchend)="desactivarHover()"
+>
+  <a
+    class="relative w-full aspect-[2/3] bg-[#F5F5F5] overflow-hidden block"
+    [routerLink]="['/producto', product.slug]"
+  >
+    <img
+      *ngIf="tieneImagenDisponible()"
+      class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+      [src]="getImagenUrl()"
+      [alt]="'Imagen de ' + product.nombre"
+      loading="lazy"
+      (error)="errorImagen($event, getFallbackUrl())"
+    />
+
+    <div
+      class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-800 to-[var(--red)]"
+      *ngIf="!tieneImagenDisponible()"
+      role="img"
+      [attr.aria-label]="'Placeholder para ' + product.nombre"
+    >
+      <span class="text-4xl font-bold text-white/90">
+        {{ product.nombre.charAt(0) }}
+      </span>
+    </div>
+
+    <div class="absolute top-2 left-2 flex flex-col gap-1.5 z-10">
+      <span
+        *ngIf="mostrarDestacado && product.destacado"
+        class="badge-featured"
+        role="status"
+        aria-label="Producto destacado"
+      >
+        DESTACADO
+      </span>
+    </div>
+
+    <!-- FAVORITO QUE TODAVÍA NO VOY A IMPLEMENTAR NO ME DA TIEMPO
+    <button
+      class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-full w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 hover:bg-white hover:scale-110"
+      [attr.aria-label]="'Añadir ' + product.nombre + ' a favoritos'"
+      type="button"
+    >
+      <lucide-icon name="heart" [size]="16" strokeWidth="2.2" aria-hidden="true"></lucide-icon>
+    </button> -->
+  </a>
+
+  <div class="p-4 flex flex-col gap-2 flex-1 min-h-[190px]">
+    <h3 class="text-base font-semibold text-gray-900 mb-1 line-clamp-2 min-h-[44px]">
+      {{ product.nombre }}
+    </h3>
+
+    <div class="flex items-center gap-2 mb-3">
+      <span class="text-lg font-bold text-gray-900">
+        {{ product.precio | currency: 'EUR' : 'symbol' : '1.2-2' : 'es' }}
+      </span>
+    </div>
+
+    <a
+      class="boton-carrito w-full mt-auto py-3 bg-black text-white rounded text-sm font-semibold transition-all hover:bg-[var(--red)] active:scale-95 inline-flex items-center justify-center gap-2"
+      [routerLink]="['/producto', product.slug]"
+      [attr.aria-label]="'Ver ' + product.nombre + ' y elegir talla'"
+    >
+      Ver detalles
+    </a>
+  </div>
+</div>

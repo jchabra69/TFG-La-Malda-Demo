@@ -1,0 +1,187 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --white: #ffffff;
+  --black-light: #29292c;
+  --black: #000000;
+  --red: #cd222b;
+  --blue-soft: #e0f2fe;
+  --blue-strong: #1d4ed8;
+  --pink-soft: #ffe4ef;
+  --pink-strong: #be185d;
+  --green-soft: #dcfce7;
+  --green-strong: #15803d;
+  --amber-soft: #fef3c7;
+  --amber-strong: #b45309;
+  --purple-soft: #ede9fe;
+  --purple-strong: #6d28d9;
+  --gray-soft: #f3f4f6;
+  --gray-strong: #374151;
+
+  --text-primary: #29292c;
+  --text-secondary: #666666;
+  --text-light: #999999;
+
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 3rem;
+  --spacing-xl: 4rem;
+  --gutter: 1.5rem;
+
+  --mobile: 480px;
+  --tablet: 768px;
+  --desktop: 1024px;
+  --wide: 1440px;
+
+  --container-max-width: 1200px;
+  --container-wide-width: 1400px;
+  --navbar-height: 72px;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
+  --shadow-strong: 0 16px 48px rgba(0, 0, 0, 0.12);
+
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
+  --font-display: 'Helvetica Compressed', 'Poppins', 'HelveticaNeue-CondensedBold', 'Arial Narrow', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-body: 'Poppins', 'Helvetica', 'Helvetica Light', 'Helvetica Neue', Arial, sans-serif;
+}
+
+
+
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@font-face {
+  font-family: 'Helvetica';
+  src: url('/assets/fonts/Helvetica.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica';
+  src: url('/assets/fonts/Helvetica-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica Light';
+  src: url('/assets/fonts/helvetica-light-587ebe5a59211.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica Compressed';
+  src: url('/assets/fonts/helvetica-compressed-5871d14b6903a.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  background: var(--white);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+}
+
+h1 {
+  font-weight: 700;
+  font-size: clamp(2.25rem, 1.2rem + 3vw, 3.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--spacing-md);
+}
+
+h2 {
+  font-weight: 600;
+  font-size: clamp(1.75rem, 1rem + 2vw, 2.5rem);
+  margin-bottom: var(--spacing-sm);
+}
+
+h3 {
+  font-weight: 400;
+  font-size: clamp(1.25rem, 0.9rem + 1.2vw, 1.75rem);
+  margin-bottom: var(--spacing-sm);
+}
+
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: color var(--transition-fast);
+
+  &:hover {
+    color: var(--red);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--black-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--red);
+}
+
+
+.container {
+  max-width: var(--wide);
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+.section {
+  padding: var(--spacing-xl) 0;
+}
+
+//Aquí voy a declarar yo propiedades personalizadas de Tailwind
+.btn-brillo {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-brillo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.25));
+  transform: translateX(-100%);
+  transition: transform 0.45s ease;
+  pointer-events: none;
+}
+
+.btn-brillo:hover::after {
+  transform: translateX(0);
+}

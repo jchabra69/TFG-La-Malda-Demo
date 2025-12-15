@@ -1,0 +1,402 @@
+<section class="bg-white p-5">
+  <header class="flex justify-between items-center mb-4">
+    <div>
+      <h1 class="m-0 text-4xl leading-tight font-display font-bold">Productos</h1>
+      <p class="mt-1 mb-0 text-text-secondary text-base">Aquí podrás crear un nuevo producto o editar los existentes</p>
+    </div>
+    <button
+      class="bg-black text-white border-none rounded-[10px] px-5 py-[0.65rem] font-bold cursor-pointer transition-all duration-200 inline-flex items-center gap-2 hover:bg-black hover:-translate-y-px"
+      (click)="crear()"
+    >
+      <i class="fa-solid fa-plus"></i>
+      Nuevo producto
+    </button>
+  </header>
+
+  @if (cargando()) {
+    <div class="grid place-items-center py-12">
+      <div class="w-10 h-10 rounded-full border-4 border-[#e5e7eb] border-t-black animate-spin"></div>
+    </div>
+  } @else {
+    <div class="grid gap-4">
+      <div class="bg-white rounded-xl shadow-[0_10px_24px_rgba(0,0,0,0.05)] overflow-hidden">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr>
+              <th class="px-4 py-[0.85rem] text-left border-b border-[#eef0f4] text-[0.95rem] bg-[#fafafa] font-bold">Producto</th>
+              <th class="px-4 py-[0.85rem] text-left border-b border-[#eef0f4] text-[0.95rem] bg-[#fafafa] font-bold">Precio</th>
+              <th class="px-4 py-[0.85rem] text-left border-b border-[#eef0f4] text-[0.95rem] bg-[#fafafa] font-bold">Categoría</th>
+              <th class="px-4 py-[0.85rem] text-left border-b border-[#eef0f4] text-[0.95rem] bg-[#fafafa] font-bold">Stock</th>
+              <th class="px-4 py-[0.85rem] text-left border-b border-[#eef0f4] text-[0.95rem] bg-[#fafafa] font-bold">Estado</th>
+              <th class="px-4 py-[0.85rem] text-left border-b border-[#eef0f4] text-[0.95rem] bg-[#fafafa] font-bold"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (producto of productos(); track producto.id) {
+              <tr>
+                <td class="px-4 py-[0.85rem] border-b border-[#eef0f4] text-[0.95rem]">
+                  <div class="flex items-center gap-3">
+                    @if (producto.imagenPrincipal) {
+                      <img
+                        [src]="producto.imagenPrincipal"
+                        [alt]="producto.nombre"
+                        class="w-12 h-12 rounded-lg object-cover border border-[#e5e7eb]"
+                      >
+                    } @else {
+                      <div class="w-12 h-12 rounded-lg bg-[#f3f4f6] flex items-center justify-center text-[#9ca3af] text-xl border border-[#e5e7eb]">
+                        <i class="fa-solid fa-image"></i>
+                      </div>
+                    }
+                    <div>
+                      <p class="font-bold m-0">{{ producto.nombre }}</p>
+                      <p class="text-xs text-[#6b7280] m-0">{{ producto.slug }}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-4 py-[0.85rem] border-b border-[#eef0f4] text-[0.95rem] font-bold">
+                  {{ producto.precio | currency:'EUR':'symbol':'1.2-2':'es' }}
+                </td>
+                <td class="px-4 py-[0.85rem] border-b border-[#eef0f4] text-[0.95rem]">
+                  <span class="inline-flex items-center justify-center px-[0.6rem] py-1 rounded-full text-xs font-bold text-black bg-[#eef0f4]">
+                    {{ getNombreCategoria(producto.categoriaId) }}
+                  </span>
+                </td>
+                <td class="px-4 py-[0.85rem] border-b border-[#eef0f4] text-[0.95rem]">
+                  <span [class]="getStockClass(producto)">
+                    {{ getStockTotal(producto) }} unidades
+                  </span>
+                </td>
+                <td class="px-4 py-[0.85rem] border-b border-[#eef0f4] text-[0.95rem]">
+                  @if (producto.destacado) {
+                    <span class="inline-flex items-center justify-center px-[0.6rem] py-1 rounded-full text-xs font-bold bg-[#fef9c3] text-[#854d0e] border border-[#fde68a]">
+                      Destacado
+                    </span>
+                  } @else {
+                    <span class="inline-flex items-center justify-center px-[0.6rem] py-1 rounded-full text-xs font-bold text-black bg-[#eef0f4]">
+                      Normal
+                    </span>
+                  }
+                </td>
+                <td class="px-4 py-[0.85rem] border-b border-[#eef0f4] text-[0.95rem]">
+                  <div class="inline-flex gap-[0.35rem]">
+                    <button
+                      class="w-[34px] h-[34px] inline-flex items-center justify-center border border-[#e5e7eb] rounded-lg bg-white cursor-pointer transition-all duration-200 hover:border-black hover:text-black"
+                      (click)="editar(producto)"
+                      title="Editar"
+                    >
+                      <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <button
+                      class="w-[34px] h-[34px] inline-flex items-center justify-center border border-[#f0c5cb] rounded-lg bg-white cursor-pointer transition-all duration-200 text-[#c62030] hover:bg-[#c62030] hover:text-white hover:border-[#c62030]"
+                      (click)="eliminar(producto.id)"
+                      title="Eliminar"
+                    >
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="px-4 py-8 text-center text-[#6b7280]">No hay productos registrados</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</section>
+
+@if (mostrandoFormulario()) {
+  <div class="fixed inset-0 bg-black/50 grid place-items-center z-[1000] overflow-y-auto py-8 px-4" (click)="cancelar()">
+    <div class="bg-white rounded-2xl w-full max-w-[900px] max-h-[90vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,0.3)]" (click)="$event.stopPropagation()">
+      <div class="flex justify-between items-center px-7 py-6 border-b border-[#e5e7eb] sticky top-0 bg-white z-10">
+        <h3 class="m-0 text-2xl font-bold">{{ editandoId() ? 'Editar producto' : 'Nuevo producto' }}</h3>
+        <button
+          class="w-9 h-9 rounded-lg border border-[#e5e7eb] bg-white cursor-pointer transition-all duration-200 flex items-center justify-center hover:bg-[#f3f4f6] hover:border-[#d1d5db]"
+          (click)="cancelar()"
+        >
+          <i class="fa-solid fa-times"></i>
+        </button>
+      </div>
+
+      <form (ngSubmit)="guardar()" #productoForm="ngForm" class="px-7 py-7">
+        <div class="grid grid-cols-2 gap-4 mb-4 mobile:grid-cols-1">
+          <div class="mb-4">
+            <label class="block font-bold text-[0.9rem] mb-2 text-[#374151]">Nombre *</label>
+            <input
+              type="text"
+              name="nombre"
+              [(ngModel)]="form.nombre"
+              class="w-full px-[0.85rem] py-[0.65rem] border border-[#e5e7eb] rounded-[10px] text-[0.95rem] transition-all duration-200 focus:outline-none focus:border-black focus:shadow-[0_0_0_3px_rgba(0,0,0,0.05)] placeholder:text-[#9ca3af]"
+              required
+
+            />
+          </div>
+
+          <div class="mb-4">
+            <label class="block font-bold text-[0.9rem] mb-2 text-[#374151]">Slug *</label>
+            <input
+              type="text"
+              name="slug"
+              [(ngModel)]="form.slug"
+              class="w-full px-[0.85rem] py-[0.65rem] border border-[#e5e7eb] rounded-[10px] text-[0.95rem] transition-all duration-200 focus:outline-none focus:border-black focus:shadow-[0_0_0_3px_rgba(0,0,0,0.05)] placeholder:text-[#9ca3af]"
+              required
+
+            />
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block font-bold text-[0.9rem] mb-2 text-[#374151]">Descripción</label>
+          <textarea
+            name="descripcion"
+            [(ngModel)]="form.descripcion"
+            class="w-full px-[0.85rem] py-[0.65rem] border border-[#e5e7eb] rounded-[10px] text-[0.95rem] resize-y font-body transition-all duration-200 focus:outline-none focus:border-black focus:shadow-[0_0_0_3px_rgba(0,0,0,0.05)] placeholder:text-[#9ca3af]"
+            rows="3"
+
+          ></textarea>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 mb-4 tablet:grid-cols-1">
+          <div class="mb-4">
+            <label class="block font-bold text-[0.9rem] mb-2 text-[#374151]">Precio (€) *</label>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              name="precio"
+              [(ngModel)]="form.precio"
+              class="w-full px-[0.85rem] py-[0.65rem] border border-[#e5e7eb] rounded-[10px] text-[0.95rem] transition-all duration-200 focus:outline-none focus:border-black focus:shadow-[0_0_0_3px_rgba(0,0,0,0.05)] placeholder:text-[#9ca3af]"
+              required
+              placeholder="0.00"
+            />
+          </div>
+
+          <div class="mb-4">
+            <label class="block font-bold text-[0.9rem] mb-2 text-[#374151]">Categoría *</label>
+            <select
+              name="categoriaId"
+              [(ngModel)]="form.categoriaId"
+              class="w-full px-[0.85rem] py-[0.65rem] border border-[#e5e7eb] rounded-[10px] text-[0.95rem] bg-white cursor-pointer transition-all duration-200 focus:outline-none focus:border-black focus:shadow-[0_0_0_3px_rgba(0,0,0,0.05)]"
+              required
+            >
+              <option [ngValue]="0">Selecciona una categoría</option>
+              @for (cat of categorias(); track cat.id) {
+                <option [ngValue]="cat.id">{{ cat.nombre }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="mb-4">
+            <label class="block font-bold text-[0.9rem] mb-2 text-[#374151]">Imagen principal</label>
+            <input
+              type="text"
+              name="imagenPrincipal"
+              [(ngModel)]="form.imagenPrincipal"
+              class="w-full px-[0.85rem] py-[0.65rem] border border-[#e5e7eb] rounded-[10px] text-[0.95rem] transition-all duration-200 focus:outline-none focus:border-black focus:shadow-[0_0_0_3px_rgba(0,0,0,0.05)] placeholder:text-[#9ca3af]"
+              placeholder="URL de la imagen"
+            />
+            <div class="flex items-center gap-2 mt-2">
+              <label class="bg-black text-white text-xs font-semibold px-3 py-1.5 rounded-md cursor-pointer hover:bg-[#c62030] transition">
+                Subir .webp
+                <input
+                  type="file"
+                  accept=".webp,image/webp"
+                  class="hidden"
+                  (change)="subirImagenPrincipal($event)"
+                />
+              </label>
+              <span class="text-[0.75rem] text-[#6b7280]">Solo WEBP (máx. 3MB)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              name="destacado"
+              [(ngModel)]="form.destacado"
+              class="w-[18px] h-[18px] cursor-pointer"
+            />
+            <span class="font-semibold text-[#374151]">Marcar como producto destacado</span>
+          </label>
+        </div>
+
+        <div class="bg-[#f9fafb] border border-[#e5e7eb] rounded-xl p-5 mb-6">
+          <div class="flex justify-between items-center mb-4">
+            <h4 class="m-0 text-[1.1rem] font-bold flex items-center gap-2 text-[#374151]">
+              <i class="fa-solid fa-layer-group"></i>
+              Variantes
+            </h4>
+            <button
+              type="button"
+              class="bg-[#f5f5f5] text-black border border-[#e5e7eb] rounded-lg px-[0.85rem] py-2 font-semibold text-sm cursor-pointer transition-all duration-200 inline-flex items-center gap-[0.35rem] hover:bg-[#e5e5e5]"
+              (click)="nuevaVariante()"
+            >
+              <i class="fa-solid fa-plus"></i>
+              Añadir variante
+            </button>
+          </div>
+
+          @if (form.variantes.length === 0) {
+            <p class="text-sm text-[#6b7280] m-0">No hay variantes añadidas</p>
+          } @else {
+            <div class="flex flex-col gap-3">
+              @for (variante of form.variantes; track $index; let i = $index) {
+                <div class="bg-white border border-[#e5e7eb] rounded-[10px] p-4">
+                  <div class="grid grid-cols-3 gap-4 tablet:grid-cols-1">
+                    <div class="flex flex-col gap-[0.35rem]">
+                      <label class="block font-semibold text-xs text-[#6b7280]">Talla *</label>
+                      <input
+                        type="text"
+                        [name]="'talla' + i"
+                        [(ngModel)]="variante.talla"
+                        #tallaCtrl="ngModel"
+                        class="w-full px-[0.65rem] py-2 border border-[#e5e7eb] rounded-lg text-sm transition-all duration-200 focus:outline-none focus:border-black placeholder:text-[#9ca3af]"
+                        placeholder="S, M, L, XL"
+                        required
+                        aria-required="true"
+                      />
+                      <p
+                        class="text-xs text-[#dc2626] m-0"
+                        *ngIf="tallaCtrl.invalid && (tallaCtrl.touched || validacionVariantesActiva)"
+                      >
+                        Campo obligatorio
+                      </p>
+                    </div>
+
+                    <div class="flex flex-col gap-[0.35rem]">
+                      <label class="block font-semibold text-xs text-[#6b7280]">Color *</label>
+                      <input
+                        type="text"
+                        [name]="'color' + i"
+                        [(ngModel)]="variante.color"
+                        #colorCtrl="ngModel"
+                        class="w-full px-[0.65rem] py-2 border border-[#e5e7eb] rounded-lg text-sm transition-all duration-200 focus:outline-none focus:border-black placeholder:text-[#9ca3af]"
+                        placeholder="Rojo, Azul..."
+                        required
+                        aria-required="true"
+                      />
+                      <p
+                        class="text-xs text-[#dc2626] m-0"
+                        *ngIf="colorCtrl.invalid && (colorCtrl.touched || validacionVariantesActiva)"
+                      >
+                        Campo obligatorio
+                      </p>
+                    </div>
+
+                    <div class="flex flex-col gap-[0.35rem]">
+                      <label class="block font-semibold text-xs text-[#6b7280]">Stock</label>
+                      <div class="flex gap-2 items-center">
+                        <input
+                          type="number"
+                          min="0"
+                          [name]="'stock' + i"
+                          [(ngModel)]="variante.stock"
+                          class="w-full px-[0.65rem] py-2 border border-[#e5e7eb] rounded-lg text-sm transition-all duration-200 focus:outline-none focus:border-black placeholder:text-[#9ca3af] flex-1"
+                          placeholder="0"
+                        />
+                        <button
+                          type="button"
+                          class="w-[34px] h-[34px] rounded-lg border border-[#fecaca] bg-white text-[#dc2626] cursor-pointer transition-all duration-200 flex items-center justify-center hover:bg-[#dc2626] hover:text-white hover:border-[#dc2626]"
+                          (click)="eliminarVariante(i)"
+                          title="Eliminar variante"
+                        >
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="bg-[#f9fafb] border border-[#e5e7eb] rounded-xl p-5 mb-6">
+          <div class="flex justify-between items-center mb-3">
+            <div>
+              <h4 class="m-0 text-lg font-bold text-[#374151]">Galería de imágenes</h4>
+              <p class="m-0 text-xs text-[#6b7280]">Añade las URLs o sube archivos .webp (máx. 3MB) desde tu ordenador.</p>
+            </div>
+            <button
+              type="button"
+              class="bg-white text-black border border-[#d1d5db] rounded-md px-3 py-2 text-sm font-semibold hover:bg-[#f3f4f6]"
+              (click)="nuevaImagen()"
+            >
+              Añadir imagen
+            </button>
+          </div>
+
+          @if (form.imagenes.length === 0) {
+            <p class="text-sm text-[#6b7280] m-0">No hay imágenes añadidas</p>
+          } @else {
+            <div class="space-y-3">
+              @for (imagen of form.imagenes; track $index; let i = $index) {
+                <div class="bg-white border border-dashed border-[#d1d5db] rounded-lg p-3 flex gap-3 items-start">
+                  <div class="w-24 h-24 rounded-md border border-[#e5e7eb] flex items-center justify-center overflow-hidden bg-[#f9fafb] text-[0.7rem] text-[#6b7280] text-center px-1">
+                    @if (imagen.url) {
+                      <img [src]="imagen.url" [alt]="'Imagen ' + (i + 1)" class="w-full h-full object-cover">
+                    } @else {
+                      Sin vista previa
+                    }
+                  </div>
+                  <div class="flex-1 space-y-2">
+                    <label class="block text-xs font-semibold text-[#4b5563]">URL imagen #{{ i + 1 }}</label>
+                    <input
+                      type="text"
+                      [name]="'url' + i"
+                      [(ngModel)]="imagen.url"
+                      class="w-full px-3 py-2 border border-[#d1d5db] rounded-md text-sm placeholder:text-[#9ca3af]"
+
+                    />
+                    <div class="flex items-center gap-2">
+                      <label class="bg-black text-white text-xs font-semibold px-3 py-1.5 rounded-md cursor-pointer hover:bg-[#c62030] transition">
+                        Subir .webp
+                        <input
+                          type="file"
+                          accept=".webp,image/webp"
+                          class="hidden"
+                          (change)="subirImagenWebp(i, $event)"
+                        />
+                      </label>
+                      <span class="text-[0.7rem] text-[#6b7280]">Solo archivos WEBP</span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    class="text-xs font-semibold text-[#dc2626] border border-[#fecaca] rounded-md px-2 py-1 hover:bg-[#fee2e2]"
+                    (click)="eliminarImagen(i)"
+                  >
+                    Quitar
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="flex justify-end gap-3 px-7 py-6 border-t border-[#e5e7eb] sticky bottom-0 bg-white z-10">
+          <button
+            type="button"
+            class="bg-[#f5f5f5] text-black border border-[#e5e7eb] rounded-[10px] px-5 py-[0.65rem] font-bold cursor-pointer transition-all duration-200 inline-flex items-center gap-2 hover:bg-[#e5e5e5]"
+            (click)="cancelar()"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="bg-black text-white border-none rounded-[10px] px-5 py-[0.65rem] font-bold cursor-pointer transition-all duration-200 inline-flex items-center gap-2 hover:bg-black hover:-translate-y-px disabled:opacity-50 disabled:cursor-not-allowed"
+            [disabled]="productoForm.invalid"
+          >
+            <i class="fa-solid fa-check"></i>
+            {{ editandoId() ? 'Actualizar' : 'Crear' }} producto
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

@@ -1,0 +1,316 @@
+<div class="detalle-producto-container max-w-[1400px] mx-auto px-4 py-8 min-h-[80vh]">
+
+  <div *ngIf="cargando()" class="loading-container flex flex-col items-center justify-center min-h-[400px] gap-4 text-[var(--text-primary)]">
+    <div class="spinner border-4 border-[#f3f3f3] border-t-4 border-t-[var(--black)] rounded-full w-[50px] h-[50px] animate-spin"></div>
+    <p>Cargando producto...</p>
+  </div>
+
+  <div *ngIf="error()" class="error-container flex flex-col items-center justify-center min-h-[400px] gap-4">
+    <div class="error-content text-center max-w-[400px]">
+      <lucide-icon name="alert-circle" [size]="64" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+      <h2>{{ error() }}</h2>
+      <button (click)="volverInicio()" class="btn-volver inline-flex items-center justify-center px-6 py-3 mt-2 rounded-lg font-semibold bg-[var(--black)] text-[var(--white)] hover:bg-[var(--text-primary)] transition">
+        Volver al inicio
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="!cargando() && !error() && producto()" class="producto-content">
+
+    <nav class="breadcrumb flex items-center gap-2 text-sm text-[var(--text-secondary)] flex-wrap mb-8">
+      <a [routerLink]="['/']">Inicio</a>
+      <span class="separador">/</span>
+      <span class="actual">{{ producto()!.nombre }}</span>
+    </nav>
+
+    <div class="producto-grid grid md:grid-cols-2 gap-8 md:gap-12 mt-8">
+
+      <div class="galeria-imagenes flex flex-col gap-4 md:sticky md:top-8">
+
+        <div class="imagen-principal">
+          <button
+            type="button"
+            class="flecha flecha-izq"
+            (click)="anteriorImagen()"
+            *ngIf="hayGaleriaProducto()"
+            aria-label="Imagen anterior"
+          >‹</button>
+          <img
+            [src]="getImagenActual()"
+            [alt]="producto()!.nombre"
+            class="imagen-grande"
+            (click)="abrirZoom()"
+          >
+          <button
+            type="button"
+            class="flecha flecha-der"
+            (click)="siguienteImagen()"
+            *ngIf="hayGaleriaProducto()"
+            aria-label="Imagen siguiente"
+          >›</button>
+
+          <button type="button" class="btn-zoom" (click)="abrirZoom()" aria-label="Ampliar imagen">
+            Ampliar
+          </button>
+
+          <div class="badges-imagen badges-izq">
+            <span *ngIf="producto()!.destacado" class="badge badge-destacado">DESTACADO</span>
+          </div>
+        </div>
+
+        <div class="miniaturas" *ngIf="hayGaleriaProducto()">
+          <button
+            *ngFor="let imagen of producto()!.imagenes; let i = index"
+            (click)="seleccionarImagen(i)"
+            [class.activa]="imagenSeleccionada() === i"
+            class="miniatura-btn"
+          >
+            <img [src]="imagen.url" [alt]="'Vista ' + (i + 1)">
+          </button>
+        </div>
+      </div>
+
+      <div class="producto-info flex flex-col gap-6">
+
+        <div class="header-info">
+          <h1 class="producto-titulo">{{ producto()!.nombre }}</h1>
+
+          <div class="producto-precio">
+            <span class="precio-actual">
+              {{ producto()!.precio | currency:'EUR':'symbol':'1.2-2' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="selector-color" *ngIf="obtenerColoresUnicos().length > 0">
+          <div class="selector-label-row">
+            <label class="selector-label block font-semibold text-[var(--text-primary)]">
+              Color
+            </label>
+          </div>
+          <div class="opciones-color">
+            <button
+              *ngFor="let color of obtenerColoresUnicos()"
+              (click)="seleccionarColor(color)"
+              [class.seleccionado]="colorSeleccionado() === color"
+              [title]="color"
+              class="opcion-color"
+            >
+              <span class="color-dot" [style.background-color]="getCodigoColor(color)"></span>
+              <span class="color-nombre">{{ color }}</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="selector-talla" *ngIf="colorSeleccionado()">
+          <label class="selector-label block font-semibold mb-3 text-[var(--text-primary)]">
+            Talla: <span class="seleccion-actual">{{ tallaSeleccionada() || 'Selecciona una talla' }}</span>
+          </label>
+          <div class="opciones-talla">
+            <button
+              *ngFor="let talla of obtenerTallasParaColor(colorSeleccionado()!)"
+              (click)="seleccionarTalla(talla)"
+              [class.seleccionado]="tallaSeleccionada() === talla"
+              class="opcion-talla"
+            >
+              {{ talla }}
+            </button>
+          </div>
+        </div>
+
+        <div class="stock-info" *ngIf="varianteSeleccionada()">
+          <span *ngIf="getStockDisponible() > 5" class="stock-pill stock-disponible">
+            <lucide-icon name="check" [size]="14" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+            En stock ({{ getStockDisponible() }})
+          </span>
+          <span *ngIf="getStockDisponible() <= 5 && getStockDisponible() > 0" class="stock-pill stock-bajo">
+            <lucide-icon name="alert-circle" [size]="14" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+            ¡Solo {{ getStockDisponible() }} disponibles!
+          </span>
+          <span *ngIf="getStockDisponible() === 0" class="stock-pill sin-stock">
+            <lucide-icon name="x" [size]="14" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+            Sin stock
+          </span>
+        </div>
+
+        <!-- Selector de Cantidad -->
+        <div class="selector-cantidad" *ngIf="varianteSeleccionada() && getStockDisponible() > 0">
+          <label class="selector-label">Cantidad:</label>
+          <div class="cantidad-controls">
+            <button
+              (click)="decrementarCantidad()"
+              [disabled]="cantidad() <= 1"
+              class="btn-cantidad"
+              aria-label="Disminuir cantidad"
+            >
+              −
+            </button>
+            <input
+              type="number"
+              [value]="cantidad()"
+              readonly
+              class="cantidad-input"
+              aria-label="Cantidad"
+            >
+            <button
+              (click)="incrementarCantidad()"
+              [disabled]="cantidad() >= getStockDisponible()"
+              class="btn-cantidad"
+              aria-label="Aumentar cantidad"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <!-- Botón Agregar al Carrito -->
+        <button
+          (click)="agregarAlCarrito()"
+          [disabled]="!varianteSeleccionada() || getStockDisponible() === 0 || animacionCarrito()"
+          class="btn-agregar-carrito"
+          [class.agregando]="animacionCarrito()"
+        >
+          <span *ngIf="!animacionCarrito()">
+            <lucide-icon name="shopping-cart" [size]="18" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+            AÑADIR AL CARRITO
+          </span>
+          <span *ngIf="animacionCarrito()" class="spinner-agregar"></span>
+        </button>
+
+        <div class="descripcion-completa" *ngIf="producto()!.descripcion">
+          <h3>Descripción</h3>
+          <p [innerHTML]="producto()!.descripcion"></p>
+        </div>
+        <div class="mt-3 text-right">
+          <button
+            type="button"
+            class="ver-detalles-link inline-block"
+            (click)="abrirDetalles('composicion')"
+          >
+            VER DETALLES
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="mt-12">
+    <h2 class="text-2xl font-semibold mb-4 text-[var(--text-primary)]">Productos relacionados</h2>
+    <div *ngIf="relacionadosCargando()" class="text-[var(--text-secondary)]">Cargando...</div>
+    <div *ngIf="relacionadosError()" class="text-red-600">{{ relacionadosError() }}</div>
+    <div
+      *ngIf="!relacionadosCargando() && !relacionadosError() && relacionados().length"
+      class="grid gap-4 sm:gap-6 grid-cols-2 md:grid-cols-4"
+    >
+      <div *ngFor="let rel of relacionados()" class="h-full">
+        <app-tarjeta-producto
+          [product]="rel"
+          [mostrarNuevo]="false"
+        ></app-tarjeta-producto>
+      </div>
+    </div>
+    <div *ngIf="!relacionadosCargando() && !relacionadosError() && !relacionados().length" class="text-[var(--text-secondary)]">
+      No hay productos relacionados por ahora.
+    </div>
+  </section>
+
+  <div *ngIf="mostrarModalAgregado()" class="modal-overlay" (click)="cerrarModal()">
+    <div class="modal-agregado" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="icono-exito">
+          <lucide-icon name="check" [size]="18" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+        </div>
+        <h3>Producto agregado al carrito</h3>
+        <button (click)="cerrarModal()" class="btn-cerrar" aria-label="Cerrar">
+          <lucide-icon name="x" [size]="18" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="producto-agregado-info">
+          <img
+            [src]="producto()!.imagenPrincipal"
+            [alt]="producto()!.nombre"
+            class="producto-mini-img"
+          >
+          <div class="producto-mini-details">
+            <p class="producto-mini-nombre">{{ producto()!.nombre }}</p>
+            <p class="producto-mini-variante">
+              {{ colorSeleccionado() }} / Talla {{ tallaSeleccionada() }}
+            </p>
+            <p class="producto-mini-cantidad">Cantidad: {{ cantidad() }}</p>
+            <p class="producto-mini-precio">
+              {{ producto()!.precio * cantidad() | currency:'EUR':'symbol':'1.2-2' }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button (click)="cerrarModal()" class="btn-seguir-comprando">
+          Seguir comprando
+        </button>
+        <button (click)="irAlCarrito()" class="btn-ir-carrito">
+          <lucide-icon name="shopping-cart" [size]="18" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+          Ver carrito
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="detalles-overlay" *ngIf="detallesAbierto()" (click)="cerrarDetalles()">
+  <div class="detalles-panel" (click)="$event.stopPropagation()">
+    <div class="detalles-header">
+      <h3>Detalles del producto</h3>
+      <button class="btn-cerrar-panel" (click)="cerrarDetalles()" aria-label="Cerrar">×</button>
+    </div>
+    <div class="detalles-tabs">
+      <button
+        [class.activa]="pestanaDetalles() === 'composicion'"
+        (click)="seleccionarPestania('composicion')"
+      >COMPOSICIÓN Y CUIDADOS</button>
+      <button
+        [class.activa]="pestanaDetalles() === 'envios'"
+        (click)="seleccionarPestania('envios')"
+      >ENVÍOS Y DEVOLUCIONES</button>
+    </div>
+
+    <div class="detalles-content" *ngIf="pestanaDetalles() === 'composicion'">
+      <h4>Composición y cuidados</h4>
+      <ul class="lista-simple">
+        <li *ngIf="producto()?.material">Composición: {{ producto()?.material }}</li>
+        <li>Origen: Diseñado en Málaga, fabricación artesana local.</li>
+      </ul>
+      <div *ngIf="producto()?.cuidado" class="mt-2">
+        <h5>Cuidados</h5>
+        <p [innerHTML]="producto()?.cuidado"></p>
+      </div>
+    </div>
+
+    <div class="detalles-content" *ngIf="pestanaDetalles() === 'envios'">
+      <h4>Envíos y devoluciones</h4>
+      <ul class="lista-simple">
+        <li>Envío 24-48h en Península.</li>
+        <li>Envío estándar 4,95 € (gratis desde 50 €).</li>
+        <li>Devoluciones en 30 días con recogida (3,95 €).</li>
+        <li>Productos deben venir sin usar y con etiquetas.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="zoomAbierto()" class="zoom-overlay" (click)="cerrarZoom()">
+  <div class="zoom-modal" (click)="$event.stopPropagation()">
+    <button class="btn-cerrar-zoom" (click)="cerrarZoom()" aria-label="Cerrar zoom">
+      <lucide-icon name="x" [size]="20" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+    </button>
+    <img
+      [src]="getImagenActual()"
+      [alt]="producto()!.nombre"
+      class="zoom-img"
+      [class.zoomed]="zoomImagenAmpliada()"
+      (click)="ponerZoomImagen()"
+    >
+  </div>
+</div>

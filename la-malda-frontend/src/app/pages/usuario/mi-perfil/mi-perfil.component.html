@@ -1,0 +1,336 @@
+<div class="max-w-6xl mx-auto px-4 py-8 md:py-10">
+  <div class="flex items-start justify-between gap-4 mb-6">
+    <div>
+      <h1 class="text-3xl font-bold tracking-tight text-gray-900">Mi perfil</h1>
+      @if (usuario(); as user) {
+        <p class="text-sm text-gray-500">{{ user.email }}</p>
+      }
+    </div>
+  </div>
+
+  <div class="grid items-start gap-6 md:grid-cols-[260px_1fr]">
+    <aside class="rounded-2xl bg-white p-4 shadow-md">
+      <div class="flex flex-col gap-2">
+        <button
+          class="btn-brillo relative flex w-full items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 font-semibold text-gray-900 transition"
+          [ngClass]="seccionActiva() === 'datos'
+            ? 'bg-black text-white border-black shadow-lg'
+            : 'bg-gray-50 hover:bg-[var(--red)] hover:text-white'"
+          (click)="cambiarSeccion('datos')">
+          <lucide-icon class="h-5 w-5" name="user" [size]="18" strokeWidth="2.2" aria-hidden="true"></lucide-icon>
+          <span>Mis datos</span>
+        </button>
+
+        <button
+          class="btn-brillo relative flex w-full items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 font-semibold text-gray-900 transition"
+          [ngClass]="seccionActiva() === 'pedidos'
+            ? 'bg-black text-white border-black shadow-lg'
+            : 'bg-gray-50 hover:bg-[var(--red)] hover:text-white'"
+          (click)="cambiarSeccion('pedidos')">
+          <lucide-icon class="h-5 w-5" name="box" [size]="18" strokeWidth="2.2" aria-hidden="true"></lucide-icon>
+          <span>Mis pedidos</span>
+        </button>
+
+        <button
+          class="btn-brillo relative flex w-full items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 font-semibold text-gray-900 transition"
+          [ngClass]="seccionActiva() === 'direcciones'
+            ? 'bg-black text-white border-black shadow-lg'
+            : 'bg-gray-50 hover:bg-[var(--red)] hover:text-white'"
+          (click)="cambiarSeccion('direcciones')">
+          <lucide-icon class="h-5 w-5" name="map-pin" [size]="18" strokeWidth="2.2" aria-hidden="true"></lucide-icon>
+          <span>Mis direcciones</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="rounded-2xl bg-white p-6 shadow-lg">
+      @if (seccionActiva() === 'datos') {
+        <section class="space-y-4">
+          <div class="flex items-center justify-between gap-3">
+            <h2 class="text-xl font-semibold text-gray-900">Datos personales</h2>
+            @if (!editandoDatos()) {
+              <button
+                class="btn-brillo rounded-xl bg-black px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#c62030]"
+                type="button"
+                (click)="editarDatos()">
+                Editar datos
+              </button>
+            }
+          </div>
+          @if (cargandoDatos()) {
+            <p class="text-gray-500">Cargando...</p>
+          } @else {
+            @if (usuario(); as user) {
+            @if (editandoDatos()) {
+              <form class="grid gap-4 md:grid-cols-2" (ngSubmit)="guardarDatos()">
+                <label class="block text-sm font-semibold text-gray-700">
+                  Nombre
+                  <input
+                    class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
+                    name="nombre"
+                    [(ngModel)]="formDatos.nombre"
+                    required>
+                </label>
+                <label class="block text-sm font-semibold text-gray-700">
+                  Apellidos
+                  <input
+                    class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
+                    name="apellidos"
+                    [(ngModel)]="formDatos.apellidos"
+                    required>
+                </label>
+                <label class="block text-sm font-semibold text-gray-700">
+                  Teléfono
+                  <input
+                    class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
+                    name="telefono"
+                    [(ngModel)]="formDatos.telefono"
+                    required>
+                </label>
+                <label class="block text-sm font-semibold text-gray-700">
+                  Correo
+                  <input
+                    class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 bg-gray-100"
+                    name="email"
+                    [(ngModel)]="formDatos.email"
+                    readonly>
+                </label>
+                <div class="col-span-2 flex gap-3">
+                  <button
+                    class="btn-brillo rounded-xl bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--red)]"
+                    type="submit">
+                    Guardar
+                  </button>
+                  <button
+                    class="btn-brillo rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-900 hover:border-black"
+                    type="button"
+                    (click)="cancelarEdicionDatos()">
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            } @else {
+              <div class="grid gap-4 md:grid-cols-2">
+                <div class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                  <p class="text-sm text-gray-500">Nombre</p>
+                  <p class="text-lg font-semibold text-gray-900">{{ user.nombre }}</p>
+                </div>
+                <div class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                  <p class="text-sm text-gray-500">Apellidos</p>
+                  <p class="text-lg font-semibold text-gray-900">{{ user.apellidos }}</p>
+                </div>
+                <div class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                  <p class="text-sm text-gray-500">Correo</p>
+                  <p class="text-lg font-semibold text-gray-900">{{ user.email }}</p>
+                </div>
+                <div class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                  <p class="text-sm text-gray-500">Teléfono</p>
+                  <p class="text-lg font-semibold text-gray-900">{{ user.telefono }}</p>
+                </div>
+                <div class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                  <p class="text-sm text-gray-500">Rol</p>
+                  <p class="text-lg font-semibold text-gray-900">{{ user.rol }}</p>
+                </div>
+                <div class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                  <p class="text-sm text-gray-500">Estado</p>
+                  <p class="text-lg font-semibold" [class.text-green-600]="user.activo" [class.text-red-600]="!user.activo">
+                    {{ user.activo ? 'Activo' : 'Inactivo' }}
+                  </p>
+                </div>
+              </div>
+            }
+            } @else {
+              <p class="text-gray-500">No pudimos cargar tu perfil.</p>
+            }
+          }
+        </section>
+      }
+
+      @if (seccionActiva() === 'pedidos') {
+        <section class="space-y-4">
+          <h2 class="text-xl font-semibold text-gray-900">Mis pedidos</h2>
+          @if (cargandoPedidos()) {
+            <p class="text-gray-500">Cargando pedidos...</p>
+          } @else {
+            @if (pedidos().length === 0) {
+              <div class="rounded-xl border border-gray-200 bg-gray-50 p-4 text-center text-gray-600">
+                Aún no has realizado ningún pedido.
+              </div>
+            } @else {
+              <div class="grid gap-4">
+                @for (pedido of pedidos(); track pedido.id) {
+                  <article class="rounded-xl border border-[#eef0f4] bg-white p-4 shadow-sm">
+                    <div class="flex flex-wrap items-start justify-between gap-2 border-b border-[#f1f3f6] pb-3">
+                      <div>
+                        <p class="m-0 mb-[0.15rem] text-sm text-text-secondary">Pedido</p>
+                        <p class="m-0 font-bold text-text-primary">#{{ pedido.id }}</p>
+                        <p class="m-0 text-sm text-text-secondary">{{ pedido.fecha | date:'dd/MM/yyyy HH:mm' }}</p>
+                      </div>
+                      <span [ngClass]="getClaseEstado(pedido.estado)">
+                        {{ estadoPedidoTexto(pedido.estado) }}
+                      </span>
+                    </div>
+                    <div class="mt-3 grid gap-3 md:grid-cols-3">
+                      <div>
+                        <p class="m-0 mb-[0.15rem] text-sm text-text-secondary">Total</p>
+                        <p class="m-0 font-bold text-text-primary">{{ pedido.total | number:'1.2-2' }}€</p>
+                      </div>
+                      <div>
+                        <p class="m-0 mb-[0.15rem] text-sm text-text-secondary">Artículos</p>
+                        <p class="m-0 font-bold text-text-primary">{{ totalLineas(pedido) }}</p>
+                      </div>
+                      <div>
+                        <p class="m-0 mb-[0.15rem] text-sm text-text-secondary">Dirección</p>
+                        @if (pedido.direccion) {
+                          <p class="m-0 font-bold text-text-primary">
+                            {{ pedido.direccion.calle }}, {{ pedido.direccion.ciudad }} ({{ pedido.direccion.codigoPostal }}) · {{ pedido.direccion.provincia }}, {{ pedido.direccion.pais }}
+                          </p>
+                        } @else {
+                          <p class="m-0 font-bold text-text-secondary">No disponible</p>
+                        }
+                      </div>
+                    </div>
+                    <div class="mt-4">
+                      <h4 class="font-bold text-text-primary mb-2 text-sm uppercase tracking-wide">Artículos</h4>
+                      <div class="space-y-2">
+                        @for (linea of pedido.lineas; track linea.productoId) {
+                          <div class="grid grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-[#f1f3f6] pb-1 text-sm last:border-b-0">
+                            <div>
+                              <p class="m-0 font-bold text-text-primary">{{ linea.nombreProducto }}</p>
+                              <p class="m-0 text-xs text-text-secondary">ID producto: {{ linea.productoId }}</p>
+                            </div>
+                            <div class="font-bold text-[#374151]">{{ linea.cantidad }}x</div>
+                            <div class="font-extrabold text-text-primary">{{ linea.subtotal | number:'1.2-2' }}€</div>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  </article>
+                }
+              </div>
+            }
+          }
+        </section>
+      }
+      @if (seccionActiva() === 'direcciones') {
+        <section class="space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold text-gray-900">Direcciones guardadas</h2>
+            <button
+              class="btn-brillo rounded-xl bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--red)] hover:text-white"
+              (click)="abrirFormularioDireccion()">
+              Nueva dirección
+            </button>
+          </div>
+
+          @if (cargandoDirecciones()) {
+            <p class="text-gray-500">Cargando direcciones...</p>
+          } @else {
+            @if (direcciones().length === 0) {
+              <div class="rounded-xl border border-gray-200 bg-gray-50 p-4 text-center text-gray-600">
+                Aún no tienes direcciones guardadas.
+              </div>
+            } @else {
+              <div class="grid gap-4 md:grid-cols-2">
+                @for (direccion of direcciones(); track direccion.id) {
+                  <article
+                    class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition"
+                    [ngClass]="{ 'border-black shadow-lg': esDireccionPredeterminada(direccion.id) }">
+                    <div class="flex items-center justify-between gap-2">
+                      <p class="text-sm font-semibold text-gray-900">Dirección #{{ direccion.id }}</p>
+                      @if (esDireccionPredeterminada(direccion.id)) {
+                        <span class="inline-flex items-center gap-1 rounded-full bg-black px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-wide text-white">
+                          Predeterminada
+                        </span>
+                      }
+                    </div>
+                    <p class="text-gray-700">{{ direccion.calle }}</p>
+                    <p class="text-gray-700">{{ direccion.codigoPostal }} · {{ direccion.ciudad }}</p>
+                    <p class="text-gray-700">{{ direccion.provincia }} · {{ direccion.pais }}</p>
+                    <div class="mt-3 flex gap-2">
+                      <button
+                        class="btn-brillo flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-900 hover:border-black"
+                        (click)="abrirFormularioDireccion(direccion)">
+                        Editar
+                      </button>
+                      <button
+                        class="btn-brillo flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold text-red-600 hover:border-red-600"
+                        (click)="eliminarDireccion(direccion.id)">
+                        Eliminar
+                      </button>
+                    </div>
+                  </article>
+                }
+              </div>
+            }
+          }
+
+          @if (mostrandoFormularioDireccion()) {
+            <form class="rounded-2xl border border-gray-200 bg-gray-50 p-4 space-y-3" (ngSubmit)="guardarDireccion()">
+              <h3 class="text-lg font-semibold text-gray-900">
+                {{ direccionEditando() ? 'Editar dirección' : 'Nueva dirección' }}
+              </h3>
+              <label class="block text-sm font-semibold text-gray-700">
+                Calle
+                <input
+                  class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
+                  name="calle"
+                  [(ngModel)]="direccionForm.calle"
+                  required>
+              </label>
+              <div class="grid gap-3 md:grid-cols-2">
+                <label class="block text-sm font-semibold text-gray-700">
+                  Ciudad
+                  <input
+                    class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
+                    name="ciudad"
+                    [(ngModel)]="direccionForm.ciudad"
+                    required>
+                </label>
+                <label class="block text-sm font-semibold text-gray-700">
+                  Provincia
+                  <input
+                    class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
+                    name="provincia"
+                    [(ngModel)]="direccionForm.provincia"
+                    required>
+                </label>
+              </div>
+              <div class="grid gap-3 md:grid-cols-2">
+                <label class="block text-sm font-semibold text-gray-700">
+                  Código postal
+                  <input
+                    class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
+                    name="codigoPostal"
+                    [(ngModel)]="direccionForm.codigoPostal"
+                    required>
+                </label>
+                <label class="block text-sm font-semibold text-gray-700">
+                  País
+                  <input
+                    class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
+                    name="pais"
+                    [(ngModel)]="direccionForm.pais"
+                    required>
+                </label>
+              </div>
+              <div class="flex flex-wrap gap-3 pt-2">
+                <button
+                  class="btn-brillo rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-900 hover:border-black"
+                  type="button"
+                  (click)="cerrarFormularioDireccion()">
+                  Cancelar
+                </button>
+                <button
+                  class="btn-brillo rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--red)]"
+                  type="submit">
+                  Guardar
+                </button>
+              </div>
+            </form>
+          }
+        </section>
+      }
+    </main>
+  </div>
+</div>

@@ -1,0 +1,105 @@
+<section class="carrusel-hero relative isolate w-full bg-[#0a0a0a] overflow-hidden" aria-roledescription="carousel" [attr.aria-label]="etiquetaDiapositiva()">
+  <div class="diapositivas" *ngIf="!cargando(); else skeleton">
+    <ng-container *ngFor="let s of diapositivas; let i = index">
+      <figure
+        class="diapositiva absolute inset-0 transition-[opacity,visibility] duration-[800ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+        [ngClass]="i === actual() ? 'opacity-100 visible z-10' : 'opacity-0 invisible'"
+        [attr.aria-hidden]="i !== actual()">
+
+        <div *ngIf="s.tipo === 'imagen'" class="contenedor-media absolute inset-0 flex items-center justify-center bg-[#0a0a0a]">
+          <img [src]="s.src"
+               [alt]="s.alt || s.slug"
+               [attr.loading]="i === 0 ? 'eager' : 'lazy'"
+               class="w-full h-full object-cover object-center bg-[#0a0a0a] transition-transform duration-[1200ms] ease-out">
+        </div>
+
+        <div *ngIf="s.tipo === 'video'" class="contenedor-media contenedor-video absolute inset-0 flex items-center justify-center bg-[#0a0a0a]">
+          <video #videoEl
+                 class="video-media w-full h-full object-cover object-center bg-[#0a0a0a]"
+                 [poster]="s.poster || null"
+                 playsinline
+                 muted
+                 preload="auto"
+                 [attr.data-index]="i"
+                 (error)="onErrorVideo($event)">
+            <source [src]="s.src" type="video/mp4" />
+          </video>
+
+          <button class="control-volumen"
+                  (click)="alternarSilencio()"
+                  *ngIf="i === actual()"
+                  [attr.aria-pressed]="!estaSilenciado()"
+                  [attr.aria-label]="estaSilenciado() ? 'Activar sonido' : 'Silenciar'"
+                  [attr.title]="estaSilenciado() ? 'Activar sonido' : 'Silenciar vídeo'">
+            <ng-container *ngIf="estaSilenciado(); else volOn">
+              <lucide-icon name="volume-x" [size]="24" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+            </ng-container>
+            <ng-template #volOn>
+
+              <lucide-icon name="volume-2" [size]="24" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+            </ng-template>
+          </button>
+        </div>
+
+        <div class="capa-contenido absolute inset-0 z-[2] flex items-start justify-start p-[clamp(40px,6vw,100px)] pointer-events-none md:justify-center md:p-6">
+          <div class="caja-contenido max-w-[700px] text-left pointer-events-auto md:text-center md:max-w-[90%] relative">
+            <!-- Título y descripción solo para imágenes -->
+            <h2 class="titulo-coleccion" *ngIf="s.tipo === 'imagen' && s.descripcion">
+            <span class="titulo-principal block text-[clamp(32px,5vw,60px)] font-extrabold leading-[1.1] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] animate-fadeInUp" style="animation-delay:0.4s">{{ s.descripcion }}</span>
+            </h2>
+          </div>
+        </div>
+
+        <div class="cta-flotante pointer-events-auto">
+          <a *ngIf="s.tipo === 'imagen'"
+             class="boton-cta inline-flex items-center gap-3 px-[clamp(30px,4.5vw,44px)] py-[clamp(14px,2.2vh,18px)] bg-[var(--red)] text-white text-[clamp(14px,1.6vw,17px)] font-bold tracking-[0.5px] rounded-full shadow-[0_8px_24px_rgba(205,34,43,0.35)] transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] animate-fadeInUp hover:-translate-y-[2px] hover:shadow-[0_12px_32px_rgba(205,34,43,0.45)] hover:text-white"
+             style="animation-delay:0.6s"
+             [routerLink]="['/catalogo']">
+            <span>Explora la tienda</span>
+            <lucide-icon name="arrow-right" [size]="20" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+          </a>
+          <a *ngIf="s.tipo === 'video'"
+             class="boton-cta inline-flex items-center gap-3 px-[clamp(30px,4.5vw,44px)] py-[clamp(14px,2.2vh,18px)] bg-[var(--red)] text-white text-[clamp(14px,1.6vw,17px)] font-bold tracking-[0.5px] rounded-full shadow-[0_8px_24px_rgba(205,34,43,0.35)] transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] animate-fadeInUp hover:-translate-y-[2px] hover:shadow-[0_12px_32px_rgba(205,34,43,0.45)] hover:text-white"
+             style="animation-delay:0.6s"
+             href="https://www.youtube.com/watch?v=peUxui44kAI"
+             target="_blank"
+             rel="noopener noreferrer">
+            <span>Ver vídeo</span>
+            <lucide-icon name="arrow-right" [size]="20" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+          </a>
+        </div>
+      </figure>
+    </ng-container>
+
+    <button class="flecha-nav anterior" (click)="anterior()" aria-label="Diapositiva anterior" title="Diapositiva anterior">
+      <lucide-icon name="chevron-left" [size]="24" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+    </button>
+    <button class="flecha-nav siguiente" (click)="siguiente()" aria-label="Siguiente diapositiva" title="Siguiente diapositiva">
+      <lucide-icon name="chevron-right" [size]="24" strokeWidth="2.4" aria-hidden="true"></lucide-icon>
+    </button>
+
+    <div class="indicators-wrapper">
+      <div class="dots" role="tablist" aria-label="Diapositivas">
+        <button *ngFor="let _ of diapositivas; let i = index"
+                role="tab"
+                [attr.aria-selected]="i === actual()"
+                [attr.aria-label]="'Ir a la diapositiva ' + (i + 1)"
+                [attr.title]="'Ir a la diapositiva ' + (i + 1)"
+                [class.active]="i === actual()"
+                (click)="irA(i)">
+          <span class="dot-inner"></span>
+        </button>
+      </div>
+
+      <div class="progreso-bar">
+        <div class="progreso-fill" [style.width.%]="progreso() * 100"></div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #skeleton>
+    <div class="skeleton-loader">
+      <div class="skeleton-shimmer"></div>
+    </div>
+  </ng-template>
+</section>

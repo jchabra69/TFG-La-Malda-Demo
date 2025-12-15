@@ -1,0 +1,163 @@
+<section class="bg-white p-5">
+  <header class="flex justify-between items-center mb-4">
+    <div>
+      <h1 class="m-0 text-4xl leading-tight font-display font-bold">Categorías</h1>
+      <p class="mt-1 mb-0 text-text-secondary text-base">Aquí podrás reorganizar las categorías y subcategorías, además de crear una nueva o editar las existentes</p>
+    </div>
+    <button
+      class="bg-black text-white border-none rounded-[10px] px-5 py-[0.65rem] font-bold cursor-pointer transition-all duration-200 inline-flex items-center gap-2 hover:bg-black hover:-translate-y-px"
+      (click)="crear()"
+    >
+      <i class="fa-solid fa-folder-plus"></i>
+      Nueva categoría
+    </button>
+  </header>
+
+  @if (cargando()) {
+    <div class="grid place-items-center py-12">
+      <div class="w-10 h-10 rounded-full border-4 border-[#e5e7eb] border-t-black animate-spin"></div>
+    </div>
+  } @else {
+    <div class="grid gap-4">
+      <div class="bg-white rounded-xl shadow-[0_10px_24px_rgba(0,0,0,0.05)] overflow-hidden">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr>
+              <th class="px-4 py-[0.85rem] text-left border-b border-[#eef0f4] text-[0.95rem] bg-[#fafafa] font-bold">Categoría</th>
+              <th class="px-4 py-[0.85rem] text-left border-b border-[#eef0f4] text-[0.95rem] bg-[#fafafa] font-bold">Slug</th>
+              <th class="px-4 py-[0.85rem] text-left border-b border-[#eef0f4] text-[0.95rem] bg-[#fafafa] font-bold">Categoría padre</th>
+              <th class="px-4 py-[0.85rem] text-left border-b border-[#eef0f4] text-[0.95rem] bg-[#fafafa] font-bold">Productos</th>
+              <th class="px-4 py-[0.85rem] text-left border-b border-[#eef0f4] text-[0.95rem] bg-[#fafafa] font-bold"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (categoria of categorias(); track categoria.id) {
+              <tr>
+                <td
+                  class="px-4 py-[0.85rem] border-b border-[#eef0f4] text-[0.95rem]"
+                  [ngClass]="!categoria.idCategoriaPadre ? getGeneroClass(categoria) : null">
+                  <span class="font-bold">{{ categoria.nombre }}</span>
+                </td>
+                <td class="px-4 py-[0.85rem] border-b border-[#eef0f4] text-[0.95rem]">
+                  <span class="text-[#6b7280] font-mono text-sm">{{ categoria.slug }}</span>
+                </td>
+                <td class="px-4 py-[0.85rem] border-b border-[#eef0f4] text-[0.95rem]">
+                  @if (categoria.nombreCategoriaPadre) {
+                    <span class="inline-flex items-center justify-center px-[0.6rem] py-1 rounded-full text-xs font-bold text-black bg-[#eef0f4]">
+                      {{ categoria.nombreCategoriaPadre }}
+                    </span>
+                  } @else {
+                    <span class="text-[#9ca3af] text-sm">NO</span>
+                  }
+                </td>
+                <td class="px-4 py-[0.85rem] border-b border-[#eef0f4] text-[0.95rem]">
+                  <span class="font-semibold">{{ categoria.totalProductos || 0 }}</span>
+                </td>
+                <td class="px-4 py-[0.85rem] border-b border-[#eef0f4] text-[0.95rem]">
+                  <div class="inline-flex gap-[0.35rem]">
+                    <button
+                      class="w-[34px] h-[34px] inline-flex items-center justify-center border border-[#e5e7eb] rounded-lg bg-white cursor-pointer transition-all duration-200 hover:border-black hover:text-black"
+                      (click)="editar(categoria)"
+                      title="Editar"
+                    >
+                      <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <button
+                      class="w-[34px] h-[34px] inline-flex items-center justify-center border border-[#f0c5cb] rounded-lg bg-white cursor-pointer transition-all duration-200 text-[#c62030] hover:bg-[#c62030] hover:text-white hover:border-[#c62030]"
+                      (click)="eliminar(categoria.id)"
+                      title="Eliminar"
+                    >
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="px-4 py-8 text-center text-[#6b7280]">No hay categorías registradas</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</section>
+
+@if (mostrandoFormulario()) {
+  <div class="fixed inset-0 bg-black/50 grid place-items-center z-[1000] overflow-y-auto py-8 px-4" (click)="cancelar()">
+    <div class="bg-white rounded-2xl w-full max-w-[600px] shadow-[0_20px_60px_rgba(0,0,0,0.3)]" (click)="$event.stopPropagation()">
+      <div class="flex justify-between items-center px-7 py-6 border-b border-[#e5e7eb]">
+        <h3 class="m-0 text-2xl font-bold">{{ editandoId() ? 'Editar categoría' : 'Nueva categoría' }}</h3>
+        <button
+          class="w-9 h-9 rounded-lg border border-[#e5e7eb] bg-white cursor-pointer transition-all duration-200 flex items-center justify-center hover:bg-[#f3f4f6] hover:border-[#d1d5db]"
+          (click)="cancelar()"
+        >
+          <i class="fa-solid fa-times"></i>
+        </button>
+      </div>
+
+      <form (ngSubmit)="guardar()" #categoriaForm="ngForm" class="px-7 py-7">
+        <div class="mb-4">
+          <label class="block font-bold text-[0.9rem] mb-2 text-[#374151]">Nombre *</label>
+          <input
+            type="text"
+            name="nombre"
+            [(ngModel)]="form.nombre"
+            class="w-full px-[0.85rem] py-[0.65rem] border border-[#e5e7eb] rounded-[10px] text-[0.95rem] transition-all duration-200 focus:outline-none focus:border-black focus:shadow-[0_0_0_3px_rgba(0,0,0,0.05)] placeholder:text-[#9ca3af]"
+            required
+
+          />
+        </div>
+
+        <div class="mb-4">
+          <label class="block font-bold text-[0.9rem] mb-2 text-[#374151]">Slug *</label>
+          <input
+            type="text"
+            name="slug"
+            [(ngModel)]="form.slug"
+            class="w-full px-[0.85rem] py-[0.65rem] border border-[#e5e7eb] rounded-[10px] text-[0.95rem] transition-all duration-200 focus:outline-none focus:border-black focus:shadow-[0_0_0_3px_rgba(0,0,0,0.05)] placeholder:text-[#9ca3af]"
+            required
+
+          />
+          <p class="text-xs text-[#6b7280] mt-1">Una cosa así: "medias-mujer"</p>
+        </div>
+
+        <div class="mb-4">
+          <label class="block font-bold text-[0.9rem] mb-2 text-[#374151]">Categoría padre</label>
+          <select
+            name="idCategoriaPadre"
+            [(ngModel)]="form.idCategoriaPadre"
+            class="w-full px-[0.85rem] py-[0.65rem] border border-[#e5e7eb] rounded-[10px] text-[0.95rem] bg-white cursor-pointer transition-all duration-200 focus:outline-none focus:border-black focus:shadow-[0_0_0_3px_rgba(0,0,0,0.05)]"
+          >
+            <option [ngValue]="null">Sin categoría padre (categoría principal)</option>
+            @for (categoria of categoriasPadre(); track categoria.id) {
+              @if (categoria.id !== editandoId()) {
+                <option [ngValue]="categoria.id">{{ categoria.nombre }}</option>
+              }
+            }
+          </select>
+          <p class="text-xs text-[#6b7280] mt-1">Selecciona una categoría padre para crear una subcategoría</p>
+        </div>
+
+        <div class="flex justify-end gap-3 px-7 py-6 border-t border-[#e5e7eb]">
+          <button
+            type="button"
+            class="bg-[#f5f5f5] text-black border border-[#e5e7eb] rounded-[10px] px-5 py-[0.65rem] font-bold cursor-pointer transition-all duration-200 inline-flex items-center gap-2 hover:bg-[#e5e5e5]"
+            (click)="cancelar()"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="bg-black text-white border-none rounded-[10px] px-5 py-[0.65rem] font-bold cursor-pointer transition-all duration-200 inline-flex items-center gap-2 hover:bg-black hover:-translate-y-px disabled:opacity-50 disabled:cursor-not-allowed"
+            [disabled]="categoriaForm.invalid"
+          >
+            <i class="fa-solid fa-check"></i>
+            {{ editandoId() ? 'Actualizar' : 'Crear' }} categoría
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

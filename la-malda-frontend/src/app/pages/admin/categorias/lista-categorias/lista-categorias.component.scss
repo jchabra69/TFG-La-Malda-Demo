@@ -1,0 +1,13 @@
+:host ::ng-deep td.categoria-root {
+  font-weight: 700;
+}
+
+:host ::ng-deep td.categoria-hombre {
+  background: var(--blue-soft);
+  color: var(--blue-strong);
+}
+
+:host ::ng-deep td.categoria-mujer {
+  background: var(--pink-soft);
+  color: var(--pink-strong);
+}

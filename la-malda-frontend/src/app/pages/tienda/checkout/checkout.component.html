@@ -1,0 +1,106 @@
+<div class="checkout-container">
+  <div class="checkout-header">
+    <button class="btn-volver" (click)="volverAlCarrito()">
+      ← Volver al carrito
+    </button>
+    <h1>Finalizar Compra</h1>
+  </div>
+
+  <div class="checkout-content">
+    <div class="checkout-main">
+      <section class="seccion-direccion">
+        <div class="header-direcciones">
+          <h2>Dirección de envío</h2>
+          <button class="btn-gestion" type="button" (click)="irAGestionDirecciones()">
+            Gestionar en Mi Perfil
+          </button>
+        </div>
+
+        @if (direcciones().length === 0) {
+          <div class="sin-direcciones">
+            <p>No tienes direcciones guardadas.</p>
+            <button class="btn-primary" type="button" (click)="irAGestionDirecciones()">
+              Ir a Mi Perfil
+            </button>
+          </div>
+        } @else {
+          <div class="lista-direcciones">
+            @for (direccion of direcciones(); track direccion.id) {
+              <label class="tarjeta-direccion" [class.seleccionada]="direccionSeleccionada() === direccion.id">
+                <input
+                  type="radio"
+                  name="direccion"
+                  [value]="direccion.id"
+                  [checked]="direccionSeleccionada() === direccion.id"
+                  (change)="seleccionarDireccion(direccion.id)">
+                <div class="info-direccion">
+                  <p class="nombre">Dirección #{{ direccion.id }}</p>
+                  <p>{{ direccion.calle }}</p>
+                  <p>{{ direccion.codigoPostal }}, {{ direccion.ciudad }}</p>
+                  <p>{{ direccion.provincia }}, {{ direccion.pais }}</p>
+                </div>
+                <button type="button" class="btn-gestion-pequeno" (click)="irAGestionDirecciones(); $event.stopPropagation()">
+                  Editar
+                </button>
+              </label>
+            }
+          </div>
+        }
+      </section>
+
+    </div>
+
+    <aside class="checkout-resumen">
+      <div class="resumen-pedido">
+        <h3>Resumen del Pedido</h3>
+
+        @if (carrito(); as carritoActual) {
+          <div class="items-resumen">
+            @for (item of carritoActual.productos; track item.id) {
+              <div class="item-resumen">
+                <div class="thumb">
+                  @if (item.imagenUrl) {
+                    <img [src]="item.imagenUrl" [alt]="item.nombreProducto">
+                  } @else {
+                    <div class="placeholder">{{ item.nombreProducto.charAt(0) || '?' }}</div>
+                  }
+                </div>
+                <span class="cantidad">{{ item.cantidad }}x</span>
+                <div class="datos">
+                  <span class="nombre">{{ item.nombreProducto }}</span>
+                </div>
+                <span class="precio">{{ item.subtotal | currency:'EUR' }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="totales">
+            <div class="linea-total">
+              <span>Subtotal</span>
+              <span>{{ carritoActual.subtotal | currency:'EUR' }}</span>
+            </div>
+            <div class="linea-total">
+              <span>Envío</span>
+              <span>GRATIS</span>
+            </div>
+            <div class="linea-total total-final">
+              <span>Total</span>
+              <span>{{ carritoActual.subtotal | currency:'EUR' }}</span>
+            </div>
+          </div>
+
+          <button
+            class="btn-confirmar"
+            [disabled]="procesando() || !direccionSeleccionada()"
+            (click)="confirmarPedido()">
+            @if (procesando()) {
+              Procesando...
+            } @else {
+              Confirmar Pedido
+            }
+          </button>
+        }
+      </div>
+    </aside>
+  </div>
+</div>

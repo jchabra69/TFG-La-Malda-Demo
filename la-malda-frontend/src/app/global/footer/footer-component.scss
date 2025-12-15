@@ -1,0 +1,21 @@
+.footer-link {
+  @apply text-[0.95rem] tracking-[0.02em] text-white text-opacity-70 transition-colors duration-150;
+}
+
+.footer-link:hover {
+  @apply text-white;
+  text-decoration: underline;
+  text-decoration-color: var(--red);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.social-btn {
+  @apply w-[42px] h-[42px] rounded-full grid place-items-center text-white text-[1rem] transition-colors duration-150;
+  background-color: #000;
+}
+
+.social-btn:hover {
+  background-color: #000;
+  color: var(--red);
+}

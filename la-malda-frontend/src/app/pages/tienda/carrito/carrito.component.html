@@ -1,0 +1,60 @@
+<div class="carrito-container max-w-[1200px] mx-auto px-4 py-8">
+  <div *ngIf="cargando()" class="estado texto-secundario">Cargando carrito...</div>
+
+  <ng-container *ngIf="!cargando() && carrito() as cart">
+    <h1 class="titulo">Tu carrito</h1>
+
+    <div *ngIf="cart?.productos?.length; else carritoVacio" class="grid md:grid-cols-[2fr_1fr] gap-6">
+      <div class="productos">
+        <div *ngFor="let producto of cart.productos; trackBy: trackByItem" class="item-card">
+          <div class="thumb" *ngIf="producto.imagenUrl">
+            <img [src]="producto.imagenUrl" [alt]="producto.nombreProducto">
+          </div>
+          <div class="info">
+            <div class="nombre">{{ producto.nombreProducto }}</div>
+            <div class="precio">{{ producto.precioUnitario | currency:'EUR':'symbol':'1.2-2' }}</div>
+            <div class="cantidad-controls">
+              <button
+                type="button"
+                class="btn-cantidad"
+                (click)="quitar(producto.id, producto.cantidad)"
+                aria-label="Disminuir cantidad">
+                -
+              </button>
+              <input
+                type="number"
+                class="cantidad-input"
+                [ngModel]="producto.cantidad"
+                (ngModelChange)="cambiarCantidadManual(producto.id, $event)"
+                min="1">
+              <button
+                type="button"
+                class="btn-cantidad"
+                (click)="incrementar(producto.id, producto.cantidad)"
+                aria-label="Aumentar cantidad">
+                +
+              </button>
+            </div>
+          </div>
+          <div class="acciones">
+            <div class="cantidad-total">{{ (producto.cantidad * producto.precioUnitario) | currency:'EUR':'symbol':'1.2-2' }}</div>
+            <button type="button" class="btn-eliminar" (click)="eliminar(producto.id)">Eliminar</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="resumen">
+        <h2>Resumen</h2>
+        <div class="total">
+          <span>Total</span>
+          <span>{{ cart.subtotal | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <button class="btn-principal" type="button" (click)="continuarPedido()">Continuar pedido</button>
+      </aside>
+    </div>
+  </ng-container>
+</div>
+
+<ng-template #carritoVacio>
+  <div class="estado texto-secundario">Tu carrito está vacío.</div>
+</ng-template>

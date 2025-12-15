@@ -1,0 +1,32 @@
+<div
+  class="barra-anuncios bg-[var(--red)] text-white h-[35px] tablet:h-[40px] overflow-hidden relative font-display tracking-[2px] border-b-4 border-black"
+>
+  <div class="h-full flex items-center overflow-hidden">
+    <div class="relative flex w-full overflow-hidden">
+
+      <div class="movimiento-barra flex flex-nowrap gap-4 tablet:gap-6 pr-4 tablet:pr-6 animate-marquee">
+
+        <span
+          *ngFor="let texto of bucle"
+          class="flex items-center gap-3 px-6 tablet:px-8 text-[0.9rem] tablet:text-[0.9rem] font-extrabold tracking-[1px] whitespace-nowrap"
+        >
+
+          <span
+            class="inline-block w-4 h-4 tablet:w-5 tablet:h-5 mr-1 bg-current icono-marca"
+            aria-hidden="true"
+            [ngStyle]="{
+              '-webkit-mask': 'url(/icons/mlogo.svg) no-repeat center / contain',
+              'mask': 'url(/icons/mlogo.svg) no-repeat center / contain'
+            }">
+          </span>
+
+          {{ texto }}
+
+          <span class="ml-4 opacity-60">•</span>
+        </span>
+
+      </div>
+
+    </div>
+  </div>
+</div>
