@@ -40,3 +40,5 @@ mysql_data/
 *.sql.bak
 
 *.exe
+
+~$*.docx
