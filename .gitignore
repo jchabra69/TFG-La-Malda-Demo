@@ -42,3 +42,6 @@ mysql_data/
 *.exe
 
 ~$*.docx
+
+~$*.docx
+~$*.doc
