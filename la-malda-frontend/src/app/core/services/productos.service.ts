@@ -88,16 +88,13 @@ export class ProductosService {
   }
 
   private mapProducto(raw: any): Producto {
-    const variantes = (raw.variantes ?? raw.variants ?? []).map((v: any) => ({
+    const variantes = (raw.variantes ?? []).map((v: any) => ({
       id: v.id,
       talla: v.talla,
       color: v.color,
-      stock: v.stock,
-      colorCode: v.colorCode,
-      estaActiva: v.estaActiva ?? true,
-      imagenUrl: v.imagenUrl
+      stock: v.stock ?? 0
     }));
-    const imagenes = (raw.imagenes ?? raw.images ?? []).map((img: any, index: number) => ({
+    const imagenes = (raw.imagenes ?? []).map((img: any, index: number) => ({
       id: img.id,
       url: img.url,
       esPrincipal: img.esPrincipal ?? index === 0,
@@ -109,31 +106,11 @@ export class ProductosService {
       slug: raw.slug,
       descripcion: raw.descripcion,
       precio: raw.precio,
-      destacado: raw.destacado ?? raw.esDestacado ?? false,
+      destacado: Boolean(raw.destacado),
       imagenPrincipal: raw.imagenPrincipal ?? raw.imagenUrl,
       categoriaId: raw.categoriaId,
       variantes,
-      imagenes,
-      variants: variantes,
-      images: imagenes,
-      precioBase: raw.precioBase ?? raw.precio,
-      precioOferta: raw.precioOferta,
-      precioFinal: raw.precioFinal ?? raw.precio,
-      porcentajeDescuento: raw.porcentajeDescuento ?? 0,
-      esNuevo: raw.esNuevo ?? false,
-      estaActivo: raw.estaActivo ?? true,
-      totalStock: variantes.reduce((total: number, v: ProductoVariante) => total + (v.stock ?? 0), 0),
-      fechaCreacion: raw.fechaCreacion,
-      fechaActualizacion: raw.fechaActualizacion,
-      nombresCategorias: raw.nombresCategorias ?? [],
-      categorias: raw.categorias ?? [],
-      coloresDisponibles: raw.coloresDisponibles ?? [],
-      tallasDisponibles: raw.tallasDisponibles ?? [],
-      material: raw.material,
-      cuidado: raw.cuidado,
-      descripcionMeta: raw.descripcionMeta,
-      palabrasClaveMeta: raw.palabrasClaveMeta,
-      esDestacado: raw.esDestacado ?? raw.destacado ?? false
+      imagenes
     };
     return producto;
   }

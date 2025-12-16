@@ -21,8 +21,7 @@ export class TarjetaProductoComponent {
   tieneImagenDisponible(): boolean {
     return Boolean(
       this.product?.imagenPrincipal ||
-        (this.product?.imagenes && this.product.imagenes.length > 0) ||
-        (this.product?.images && this.product.images.length > 0)
+        (this.product?.imagenes && this.product.imagenes.length > 0)
     );
   }
 
@@ -69,7 +68,7 @@ export class TarjetaProductoComponent {
   }
 
   private getImagenActual(): { url?: string; fallback?: string } {
-    const galeria: ProductoImagen[] = this.product.images || this.product.imagenes || [];
+    const galeria: ProductoImagen[] = this.product.imagenes || [];
     const principalUrl = this.product.imagenPrincipal || galeria[0]?.url;
 
     const principalImagen =

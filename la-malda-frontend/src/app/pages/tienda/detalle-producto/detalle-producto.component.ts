@@ -234,7 +234,7 @@ export class DetalleProductoComponent implements OnInit {
 
     const coloresSet = new Set(
       producto.variantes
-        .filter(v => v.color && (v.estaActiva ?? true))
+        .filter(v => v.color)
         .map(v => v.color!)
     );
 
@@ -246,7 +246,7 @@ export class DetalleProductoComponent implements OnInit {
     if (!producto || !producto.variantes) return [];
 
     return producto.variantes
-      .filter(v => v.color === color && (v.estaActiva ?? true))
+      .filter(v => v.color === color)
       .map(v => v.talla!)
       .filter(Boolean);
   }
@@ -254,14 +254,6 @@ export class DetalleProductoComponent implements OnInit {
   getStockDisponible(): number {
     const variante = this.varianteSeleccionada();
     return variante?.stock || 0;
-  }
-
-  getCodigoColor(color: string): string | undefined {
-    const producto = this.producto();
-    if (!producto || !producto.variantes) return undefined;
-
-    const variante = producto.variantes.find(v => v.color === color);
-    return variante?.colorCode;
   }
 
   abrirDetalles(tab: 'descripcion' | 'composicion' | 'envios' = 'descripcion') {

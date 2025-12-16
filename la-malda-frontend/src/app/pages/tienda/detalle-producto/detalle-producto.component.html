@@ -96,7 +96,7 @@
               [title]="color"
               class="opcion-color"
             >
-              <span class="color-dot" [style.background-color]="getCodigoColor(color)"></span>
+              <span class="color-dot"></span>
               <span class="color-nombre">{{ color }}</span>
             </button>
           </div>
@@ -279,12 +279,12 @@
     <div class="detalles-content" *ngIf="pestanaDetalles() === 'composicion'">
       <h4>Composición y cuidados</h4>
       <ul class="lista-simple">
-        <li *ngIf="producto()?.material">Composición: {{ producto()?.material }}</li>
+        <li>Composición: tejidos de alta calidad seleccionados para cada colección.</li>
         <li>Origen: Diseñado en Málaga, fabricación artesana local.</li>
       </ul>
-      <div *ngIf="producto()?.cuidado" class="mt-2">
+      <div class="mt-2">
         <h5>Cuidados</h5>
-        <p [innerHTML]="producto()?.cuidado"></p>
+        <p>Lavar a mano con agua fría o en programa delicado. No usar lejía. Secar a la sombra y planchar a baja temperatura.</p>
       </div>
     </div>
 
